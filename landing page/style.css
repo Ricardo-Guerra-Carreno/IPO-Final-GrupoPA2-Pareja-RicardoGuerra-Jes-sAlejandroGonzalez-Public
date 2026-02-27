@@ -1,0 +1,318 @@
+/* ========================================================
+  1. VARIABLES CSS (Design Tokens)
+  Propósito: Centralizar los valores visuales del proyecto. 
+  Permite escalar el diseño, mantener consistencia y facilitar 
+  la futura implementación de temas (ej: Modo Oscuro).
+  ========================================================
+*/
+:root {
+    --bg-body: #f8fafc; /* Gris muy suave para reducir fatiga visual */
+    --bg-card: #ffffff; /* Contraste para destacar elementos interactivos */
+    --text-main: #0f172a;
+    --text-muted: #64748b; /* Textos secundarios para no saturar la lectura */
+    --primary: #4f46e5;    /* Color de acción (Botones, links, usuario) */
+    --primary-hover: #4338ca;
+    --border-light: #f1f5f9;
+    --border-dark: #e2e8f0;
+    
+    /* Colores semánticos de Estado (HCI: Mapeo mental directo) */
+    --status-easy-bg: #dcfce7;
+    --status-easy-text: #166534; /* Verde = Asequible / Positivo */
+    --status-urgent-bg: #fef2f2;
+    --status-urgent-text: #dc2626; /* Rojo = Alerta / Urgente */
+    --status-medium-bg: #fef9c3;
+    --status-medium-text: #854d0e; /* Amarillo = Advertencia / Medio */
+    
+    /* Indicadores visuales en el borde izquierdo de las tareas */
+    --bar-high: #ef4444;
+    --bar-medium: #facc15;
+    --bar-low: #6366f1;
+}
+
+/* ========================================================
+  2. RESET BÁSICO Y BASE
+  Propósito: Estandarizar el comportamiento en todos los navegadores.
+  ========================================================
+*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Previene que padding rompa anchos definidos */
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    -webkit-font-smoothing: antialiased; /* Mejora lectura de fuentes en Mac/iOS */
+    padding-bottom: 80px; /* Reserva espacio para que la barra inferior móvil no tape contenido */
+}
+
+/* ========================================================
+  3. ESTRUCTURA Y NAVEGACIÓN SUPERIOR
+  ========================================================
+*/
+.navbar {
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-dark);
+    /* HCI: Position sticky mantiene el contexto de navegación siempre visible al hacer scroll */
+    position: sticky; 
+    top: 0;
+    z-index: 10;
+}
+
+.container {
+    max-width: 1152px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 4rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.logo svg { width: 32px; height: 32px; color: var(--primary); }
+
+.profile-section { display: flex; align-items: center; gap: 1rem; }
+.profile-info { text-align: right; }
+.profile-info .name { font-size: 0.875rem; font-weight: 600; }
+.profile-info .points { font-size: 0.75rem; color: var(--primary); font-weight: 500; }
+
+.avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background-color: #e0e7ff;
+    border: 2px solid #c7d2fe;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary); font-weight: bold;
+}
+
+/* ========================================================
+  4. CONTENIDO PRINCIPAL (Grid Layout)
+  ========================================================
+*/
+.main-content { padding-top: 2rem; }
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Relación visual 2/3 (Tareas) a 1/3 (Leaderboard) */
+    gap: 2rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h1 { font-size: 1.5rem; font-weight: 700; }
+.section-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem; }
+.history-link { color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; }
+
+/* ========================================================
+  5. COMPONENTE: TARJETAS DE TAREAS (.task-card)
+  ========================================================
+*/
+.tasks-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.task-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden; /* Necesario para que la barra lateral no se salga de los bordes curvos */
+    
+    /* Sombra base para dar affordance (sensación de ser un elemento físico) */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+/* Interacción de ratón: Feedback visual de que la tarjeta es activa/clicable */
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+}
+
+/* Barra decorativa de urgencia en el lateral izquierdo */
+.task-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+}
+/* Clases modificadoras aplicadas desde el HTML para cambiar el estado visual */
+.task-card.urgent::before { background-color: var(--bar-high); }
+.task-card.medium::before { background-color: var(--bar-medium); }
+.task-card.low::before { background-color: var(--bar-low); }
+
+.task-info { display: flex; align-items: flex-start; gap: 1rem; padding-left: 0.5rem; }
+.task-icon { background-color: #f8fafc; padding: 0.75rem; border-radius: 0.75rem; font-size: 1.5rem; }
+.task-details h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; }
+
+.badges-container { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.badge {
+    display: inline-flex; align-items: center; padding: 0.125rem 0.625rem;
+    border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
+}
+.badge.easy { background-color: var(--status-easy-bg); color: var(--status-easy-text); }
+.badge.urgent { background-color: var(--status-urgent-bg); color: var(--status-urgent-text); }
+.badge.medium-diff { background-color: var(--status-medium-bg); color: var(--status-medium-text); }
+.badge.neutral { background-color: var(--border-light); color: var(--text-muted); }
+.badge svg { width: 12px; height: 12px; margin-right: 4px; }
+
+/* Sección derecha de la tarjeta: Acción y recompensa */
+.task-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; }
+.points-reward { text-align: right; }
+.points-reward .pts-number { display: block; font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+.points-reward .pts-label { display: block; font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+
+.btn-complete {
+    background-color: #0f172a;
+    color: white;
+    border: none;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.btn-complete:hover { background-color: var(--primary); }
+
+/* ========================================================
+  6. COMPONENTE: CLASIFICACIÓN (Leaderboard)
+  ========================================================
+*/
+.leaderboard-widget {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    /* HCI: Mantiene la gamificación a la vista del usuario mientras baja por la lista de tareas */
+    position: sticky;
+    top: 6rem;
+}
+
+.leaderboard-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(to right, #f8fafc, #ffffff);
+    border-radius: 1rem 1rem 0 0;
+}
+.leaderboard-header h2 { font-size: 1.125rem; font-weight: 700; }
+.month-tag { font-size: 0.75rem; color: var(--text-muted); padding: 0.25rem 0.5rem; border: 1px solid var(--border-dark); border-radius: 0.375rem; }
+
+.leaderboard-body { padding: 0.5rem; }
+.ranking-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.75rem; border-radius: 0.75rem; margin-bottom: 0.25rem;
+}
+
+/* Modificadores visuales para destacar la posición en el ranking */
+.ranking-item.top-1 { background-color: #fffbeb; border: 1px solid #fde68a; }
+.ranking-item.current-user { border: 1px solid transparent; }
+.ranking-item.current-user:hover, .ranking-item.others:hover { background-color: #f8fafc; }
+
+.rank-user-info { display: flex; align-items: center; gap: 0.75rem; }
+.rank-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+.top-1 .rank-avatar { background: white; border: 1px solid #fde047; }
+.current-user .rank-avatar { background: #e0e7ff; border: 2px solid #c7d2fe; color: var(--primary); font-weight: bold; }
+.others .rank-avatar { background: var(--border-light); font-size: 1.25rem; }
+
+.rank-name { font-size: 0.875rem; font-weight: 700; }
+.rank-subtitle { font-size: 0.75rem; color: var(--text-muted); }
+.top-1 .rank-subtitle { color: #b45309; }
+
+.rank-score { text-align: right; }
+.rank-score .score-num { font-size: 1.125rem; font-weight: 700; }
+.rank-score .score-pts { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
+.top-1 .rank-score .score-num { color: #d97706; font-weight: 900; }
+
+.leaderboard-footer {
+    padding: 1rem; background-color: #f8fafc; border-top: 1px solid var(--border-light);
+    border-radius: 0 0 1rem 1rem; text-align: center; font-size: 0.75rem; color: var(--text-muted);
+}
+
+/* ========================================================
+  7. NAVEGACIÓN MÓVIL (Barra inferior)
+  ========================================================
+*/
+.mobile-nav {
+    display: none; /* Oculta en escritorio */
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-dark);
+    z-index: 10;
+}
+
+.mobile-nav-content { display: flex; justify-content: space-around; height: 4rem; }
+.mobile-btn {
+    background: none; border: none; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; width: 100%;
+    color: var(--text-muted); cursor: pointer;
+}
+.mobile-btn.active { color: var(--primary); }
+.mobile-btn svg { width: 24px; height: 24px; margin-bottom: 2px; }
+.mobile-btn span { font-size: 0.65rem; font-weight: 500; }
+
+/* ========================================================
+  8. DISEÑO RESPONSIVE (Media Queries)
+  Propósito: Adaptar la interfaz a los diferentes tamaños de pantalla.
+  ========================================================
+*/
+
+/* Tablets */
+@media (max-width: 992px) {
+    /* El grid de 2 columnas pasa a 1 columna. La clasificación se coloca debajo de las tareas */
+    .grid-layout { grid-template-columns: 1fr; } 
+    .leaderboard-widget { position: static; } /* Se elimina el sticky porque interrumpiría el scroll natural */
+}
+
+/* Móviles */
+@media (max-width: 640px) {
+    /* Limpieza de la cabecera para ahorrar espacio */
+    .profile-info { display: none; } 
+    .history-link { display: none; }
+    
+    /* Reorganización de la tarjeta de tarea para pantallas estrechas */
+    .task-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    /* Adaptación ergonómica del botón (Fitts' Law): Ocupar el 100% de ancho facilita la pulsación con el pulgar */
+    .task-actions {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid var(--border-light);
+        padding-top: 1rem;
+        margin-top: 1rem;
+    }
+    .btn-complete { width: 100%; margin-left: 1rem; }
+    
+    /* Activación del menú diseñado ergonómicamente para pulgares */
+    .mobile-nav { display: block; }
+}

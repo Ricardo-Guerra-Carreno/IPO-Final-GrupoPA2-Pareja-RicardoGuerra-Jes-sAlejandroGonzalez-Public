@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Configuración básica y metadatos para correcta visualización en móviles -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColabHome - Tareas del Hogar</title>
+    
+    <!-- Importación de tipografía sin remates (sans-serif) para mejorar la legibilidad en pantallas digitales -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Enlace al archivo de estilos externos. Separa la estructura (HTML) de la presentación (CSS) -->
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- 
+      === BARRA DE NAVEGACIÓN SUPERIOR ===
+      Propósito: Mantener al usuario contextualizado sobre dónde está y con qué cuenta está operando.
+    -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <!-- Identidad visual y "Home" implícito -->
+            <div class="logo">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span>PisoLimpio</span>
+            </div>
+            
+            <!-- Perfil de usuario y estado actual (puntos) para motivación constante -->
+            <div class="profile-section">
+                <div class="profile-info">
+                    <div class="name">Hola, Álex</div>
+                    <div class="points">280 Puntos totales</div>
+                </div>
+                <div class="avatar">A</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 
+      === CONTENEDOR PRINCIPAL ===
+      Propósito: Agrupar el contenido central de la aplicación.
+      Utiliza la etiqueta semántica <main> para accesibilidad y lectores de pantalla.
+    -->
+    <main class="container main-content">
+        <div class="grid-layout">
+            
+            <!-- 
+              --- COLUMNA IZQUIERDA: LISTA DE TAREAS ---
+              Ocupa la mayor parte de la pantalla (2/3 en escritorio) ya que es la función principal.
+            -->
+            <section class="tasks-section">
+                
+                <!-- Encabezado de la sección: Proporciona carga cognitiva baja resumiendo lo que hay que hacer -->
+                <header class="section-header">
+                    <div>
+                        <h1>Mis Tareas Pendientes</h1>
+                        <p>Tienes 3 tareas asignadas para esta semana.</p>
+                    </div>
+                    <a href="#" class="history-link">Ver historial completado &rarr;</a>
+                </header>
+
+                <div class="tasks-list">
+                    
+                    <!-- 
+                      TAREA 1: Prioridad Urgente
+                      Estructura HCI: Patrón de lectura en "F". Izquierda (Icono identificativo) -> 
+                      Centro (Detalles) -> Derecha (Acción/Recompensa).
+                    -->
+                    <article class="task-card urgent">
+                        <div class="task-info">
+                            <!-- Reconocimiento visual rápido -->
+                            <div class="task-icon">🗑️</div>
+                            <div class="task-details">
+                                <h3>Bajar la basura y reciclaje</h3>
+                                <div class="badges-container">
+                                    <!-- Etiquetas semánticas: Uso del verde para "Fácil" y rojo para "Urgente" -->
+                                    <span class="badge easy">Fácil</span>
+                                    <span class="badge urgent">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Hoy (antes de las 22:00)
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Zona de recompensa y acción -->
+                        <div class="task-actions">
+                            <div class="points-reward">
+                                <span class="pts-number">+10</span>
+                                <span class="pts-label">Puntos</span>
+                            </div>
+                            <button class="btn-complete">Completar</button>
+                        </div>
+                    </article>
+
+                    <!-- TAREA 2: Prioridad Media -->
+                    <article class="task-card medium">
+                        <div class="task-info">
+                            <div class="task-icon">🍽️</div>
+                            <div class="task-details">
+                                <h3>Recoger lavavajillas y encimera</h3>
+                                <div class="badges-container">
+                                    <span class="badge medium-diff">Media</span>
+                                    <span class="badge neutral">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        Para mañana
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <div class="points-reward">
+                                <span class="pts-number">+25</span>
+                                <span class="pts-label">Puntos</span>
+                            </div>
+                            <button class="btn-complete">Completar</button>
+                        </div>
+                    </article>
+
+                    <!-- TAREA 3: Prioridad Baja (Largo Plazo) -->
+                    <article class="task-card low">
+                        <div class="task-info">
+                            <div class="task-icon">🧽</div>
+                            <div class="task-details">
+                                <h3>Limpieza a fondo del baño</h3>
+                                <div class="badges-container">
+                                    <span class="badge urgent">Difícil</span>
+                                    <span class="badge neutral">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        Quedan 4 días
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <div class="points-reward">
+                                <span class="pts-number">+50</span>
+                                <span class="pts-label">Puntos</span>
+                            </div>
+                            <button class="btn-complete">Completar</button>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
+            <!-- 
+              --- COLUMNA DERECHA: CLASIFICACIÓN (GAMIFICACIÓN) ---
+              Etiqueta semántica <aside>: Es contenido relacionado pero secundario.
+              Ocupa 1/3 del espacio en escritorio.
+            -->
+            <aside class="leaderboard-section">
+                <div class="leaderboard-widget">
+                    
+                    <div class="leaderboard-header">
+                        <h2>🏆 Clasificación del Piso</h2>
+                        <span class="month-tag">Este Mes</span>
+                    </div>
+
+                    <div class="leaderboard-body">
+                        <!-- Puesto 1: Destacado visualmente para marcar el objetivo -->
+                        <div class="ranking-item top-1">
+                            <div class="rank-user-info">
+                                <div class="rank-avatar">👩🏻</div>
+                                <div>
+                                    <p class="rank-name">Marta (Top)</p>
+                                    <p class="rank-subtitle">Imparable 🔥</p>
+                                </div>
+                            </div>
+                            <div class="rank-score">
+                                <span class="score-num">420</span>
+                                <span class="score-pts">pts</span>
+                            </div>
+                        </div>
+
+                        <!-- Puesto 2 (Usuario Actual): Resaltado sutilmente para ubicación rápida -->
+                        <div class="ranking-item current-user">
+                            <div class="rank-user-info">
+                                <div class="rank-avatar">A</div>
+                                <div>
+                                    <p class="rank-name">Álex (Tú)</p>
+                                    <p class="rank-subtitle">¡A por el líder!</p>
+                                </div>
+                            </div>
+                            <div class="rank-score">
+                                <span class="score-num">280</span>
+                                <span class="score-pts">pts</span>
+                            </div>
+                        </div>
+
+                        <!-- Puesto 3 -->
+                        <div class="ranking-item others">
+                            <div class="rank-user-info">
+                                <div class="rank-avatar">👨🏽</div>
+                                <div>
+                                    <p class="rank-name">Carlos</p>
+                                    <p class="rank-subtitle">Necesita un empujón</p>
+                                </div>
+                            </div>
+                            <div class="rank-score">
+                                <span class="score-num">150</span>
+                                <span class="score-pts">pts</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="leaderboard-footer">
+                        La recompensa mensual: <strong>Cena pagada por los perdedores 🍕</strong>
+                    </div>
+
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <!-- 
+      === NAVEGACIÓN INFERIOR (MÓVILES) ===
+      Propósito: Ley de Fitts. En teléfonos móviles, los pulgares descansan en la 
+      parte inferior. Colocar los botones clave aquí reduce la fatiga de interacción.
+      (Oculto por defecto en CSS, visible solo en pantallas pequeñas)
+    -->
+    <nav class="mobile-nav">
+        <div class="mobile-nav-content">
+            <button class="mobile-btn active">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span>Inicio</span>
+            </button>
+            <button class="mobile-btn">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                <span>Todas</span>
+            </button>
+            <button class="mobile-btn">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <span>Ajustes</span>
+            </button>
+        </div>
+    </nav>
+
+</body>
+</html>
