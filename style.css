@@ -6,27 +6,28 @@
   ========================================================
 */
 :root {
-    --bg-body: #f8fafc; /* Gris muy suave para reducir fatiga visual */
-    --bg-card: #ffffff; /* Contraste para destacar elementos interactivos */
-    --text-main: #0f172a;
-    --text-muted: #64748b; /* Textos secundarios para no saturar la lectura */
-    --primary: #4f46e5;    /* Color de acción (Botones, links, usuario) */
-    --primary-hover: #4338ca;
-    --border-light: #f1f5f9;
-    --border-dark: #e2e8f0;
+    --bg-body: #0f172a; /* Fondo oscuro para reducir fatiga visual */
+    --bg-card: #1e293b; /* Contraste para destacar elementos interactivos */
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8; /* Textos secundarios para no saturar la lectura */
+    --primary: #6366f1;    /* Color de acción (Botones, links, usuario) */
+    --primary-hover: #818cf8;
+    --border-light: #334155;
+    --border-dark: #475569;
     
     /* Colores semánticos de Estado (HCI: Mapeo mental directo) */
-    --status-easy-bg: #dcfce7;
-    --status-easy-text: #166534; /* Verde = Asequible / Positivo */
-    --status-urgent-bg: #fef2f2;
-    --status-urgent-text: #dc2626; /* Rojo = Alerta / Urgente */
-    --status-medium-bg: #fef9c3;
-    --status-medium-text: #854d0e; /* Amarillo = Advertencia / Medio */
+    --status-easy-bg: #064e3b;
+    --status-easy-text: #6ee7b7; /* Verde = Asequible / Positivo */
+    --status-urgent-bg: #7f1d1d;
+    --status-urgent-text: #fca5a5; /* Rojo = Alerta / Urgente */
+    --status-medium-bg: #713f12;
+    --status-medium-text: #fde047; /* Amarillo = Advertencia / Medio */
     
     /* Indicadores visuales en el borde izquierdo de las tareas */
-    --bar-high: #ef4444;
-    --bar-medium: #facc15;
-    --bar-low: #6366f1;
+    /* Sistema de colores intuitivo basado en urgencia temporal */
+    --bar-high: #ff6b35;      /* Naranja-rojo: Urgente (Hoy) - Requiere atención inmediata */
+    --bar-medium: #3b82f6;    /* Azul: Próximamente (Mañana) - Planifica */
+    --bar-low: #10b981;       /* Verde: Sin prisa (Varios días) - Relajado */
 }
 
 /* ========================================================
@@ -92,10 +93,10 @@ body {
 .avatar {
     width: 40px; height: 40px;
     border-radius: 50%;
-    background-color: #e0e7ff;
-    border: 2px solid #c7d2fe;
+    background-color: #312e81;
+    border: 2px solid #4f46e5;
     display: flex; align-items: center; justify-content: center;
-    color: var(--primary); font-weight: bold;
+    color: #a5b4fc; font-weight: bold;
 }
 
 /* ========================================================
@@ -119,7 +120,71 @@ body {
 
 .section-header h1 { font-size: 1.5rem; font-weight: 700; }
 .section-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem; }
-.history-link { color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; }
+.section-subtitle strong { color: var(--primary); font-weight: 700; }
+.history-link { 
+    color: var(--primary); 
+    text-decoration: none; 
+    font-size: 0.875rem; 
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.history-link:hover {
+    background-color: rgba(99, 102, 241, 0.1);
+    border-color: var(--primary);
+    transform: translateX(2px);
+}
+.history-link svg {
+    transition: transform 0.2s ease;
+}
+.history-link:hover svg {
+    transform: rotate(12deg);
+}
+
+/* Leyenda de colores de prioridad */
+.priority-legend {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem 1.25rem;
+    background-color: var(--bg-card);
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-light);
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.urgent-color {
+    background-color: var(--bar-high);
+}
+
+.medium-color {
+    background-color: var(--bar-medium);
+}
+
+.low-color {
+    background-color: var(--bar-low);
+}
 
 /* ========================================================
   5. COMPONENTE: TARJETAS DE TAREAS (.task-card)
@@ -140,13 +205,15 @@ body {
     
     /* Sombra base para dar affordance (sensación de ser un elemento físico) */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
 }
 
 /* Interacción de ratón: Feedback visual de que la tarjeta es activa/clicable */
 .task-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(99, 102, 241, 0.1);
+    border-color: var(--border-dark);
 }
 
 /* Barra decorativa de urgencia en el lateral izquierdo */
@@ -159,43 +226,142 @@ body {
     width: 4px;
 }
 /* Clases modificadoras aplicadas desde el HTML para cambiar el estado visual */
-.task-card.urgent::before { background-color: var(--bar-high); }
-.task-card.medium::before { background-color: var(--bar-medium); }
-.task-card.low::before { background-color: var(--bar-low); }
+.task-card.urgent::before { 
+    background-color: var(--bar-high);
+    box-shadow: inset 3px 0 8px rgba(255, 107, 53, 0.4);
+}
+.task-card.medium::before { 
+    background-color: var(--bar-medium);
+    box-shadow: inset 3px 0 8px rgba(59, 130, 246, 0.4);
+}
+.task-card.low::before { 
+    background-color: var(--bar-low);
+    box-shadow: inset 3px 0 8px rgba(16, 185, 129, 0.4);
+}
 
 .task-info { display: flex; align-items: flex-start; gap: 1rem; padding-left: 0.5rem; }
-.task-icon { background-color: #f8fafc; padding: 0.75rem; border-radius: 0.75rem; font-size: 1.5rem; }
+.task-icon { 
+    background-color: #0f172a; 
+    padding: 0.75rem; 
+    border-radius: 0.75rem; 
+    font-size: 1.5rem;
+    border: 2px solid var(--border-light);
+    transition: transform 0.2s ease;
+}
+.task-card:hover .task-icon {
+    transform: scale(1.1);
+}
 .task-details h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; }
 
 .badges-container { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .badge {
     display: inline-flex; align-items: center; padding: 0.125rem 0.625rem;
     border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
 }
-.badge.easy { background-color: var(--status-easy-bg); color: var(--status-easy-text); }
-.badge.urgent { background-color: var(--status-urgent-bg); color: var(--status-urgent-text); }
-.badge.medium-diff { background-color: var(--status-medium-bg); color: var(--status-medium-text); }
-.badge.neutral { background-color: var(--border-light); color: var(--text-muted); }
+.badge.easy { 
+    background-color: var(--status-easy-bg); 
+    color: var(--status-easy-text);
+    border-color: rgba(110, 231, 183, 0.3);
+}
+.badge.urgent { 
+    background-color: var(--status-urgent-bg); 
+    color: var(--status-urgent-text);
+    border-color: rgba(252, 165, 165, 0.3);
+    animation: pulse-urgent 2s ease-in-out infinite;
+}
+.badge.medium-diff { 
+    background-color: var(--status-medium-bg); 
+    color: var(--status-medium-text);
+    border-color: rgba(253, 224, 71, 0.3);
+}
+.badge.neutral { 
+    background-color: var(--border-light); 
+    color: var(--text-muted);
+}
 .badge svg { width: 12px; height: 12px; margin-right: 4px; }
+
+@keyframes pulse-urgent {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
 
 /* Sección derecha de la tarjeta: Acción y recompensa */
 .task-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; }
-.points-reward { text-align: right; }
+.points-reward { 
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.points-reward .pts-icon {
+    font-size: 1.5rem;
+    animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
 .points-reward .pts-number { display: block; font-size: 1.25rem; font-weight: 700; color: var(--primary); }
 .points-reward .pts-label { display: block; font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
 
 .btn-complete {
-    background-color: #0f172a;
+    background-color: var(--primary);
     color: white;
     border: none;
     padding: 0.625rem 1.25rem;
     border-radius: 0.75rem;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    position: relative;
+    overflow: hidden;
 }
-.btn-complete:hover { background-color: var(--primary); }
+
+.btn-complete::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-complete:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-complete:hover { 
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
+}
+
+.btn-complete:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+}
+
+.btn-complete svg {
+    position: relative;
+    z-index: 1;
+}
+
+.btn-complete:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
 
 /* ========================================================
   6. COMPONENTE: CLASIFICACIÓN (Leaderboard)
@@ -215,45 +381,345 @@ body {
     padding: 1.25rem;
     border-bottom: 1px solid var(--border-light);
     display: flex; justify-content: space-between; align-items: center;
-    background: linear-gradient(to right, #f8fafc, #ffffff);
+    background: linear-gradient(to right, #0f172a, #1e293b);
     border-radius: 1rem 1rem 0 0;
 }
-.leaderboard-header h2 { font-size: 1.125rem; font-weight: 700; }
-.month-tag { font-size: 0.75rem; color: var(--text-muted); padding: 0.25rem 0.5rem; border: 1px solid var(--border-dark); border-radius: 0.375rem; }
+.leaderboard-header h2 { font-size: 1.125rem; font-weight: 700; margin-bottom: 0.25rem; }
+.leaderboard-hint { 
+    font-size: 0.7rem; 
+    color: var(--text-muted); 
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.leaderboard-hint::before {
+    content: '•';
+    color: #22c55e;
+    animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+.month-tag { 
+    font-size: 0.75rem; 
+    color: var(--text-muted); 
+    padding: 0.25rem 0.5rem; 
+    border: 1px solid var(--border-dark); 
+    border-radius: 0.375rem;
+    background-color: rgba(99, 102, 241, 0.1);
+}
 
 .leaderboard-body { padding: 0.5rem; }
 .ranking-item {
     display: flex; justify-content: space-between; align-items: center;
     padding: 0.75rem; border-radius: 0.75rem; margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+    cursor: default;
 }
 
 /* Modificadores visuales para destacar la posición en el ranking */
-.ranking-item.top-1 { background-color: #fffbeb; border: 1px solid #fde68a; }
-.ranking-item.current-user { border: 1px solid transparent; }
-.ranking-item.current-user:hover, .ranking-item.others:hover { background-color: #f8fafc; }
+.ranking-item.top-1 { 
+    background-color: #422006; 
+    border: 1px solid #92400e;
+    position: relative;
+}
+.ranking-item.top-1::after {
+    content: '🎉';
+    position: absolute;
+    right: 0.5rem;
+    font-size: 1.25rem;
+    opacity: 0.5;
+}
+.ranking-item.current-user { 
+    border: 1px solid var(--primary);
+    background-color: rgba(99, 102, 241, 0.05);
+}
+.ranking-item.current-user:hover, .ranking-item.others:hover { 
+    background-color: #1e293b;
+    transform: translateX(4px);
+}
 
 .rank-user-info { display: flex; align-items: center; gap: 0.75rem; }
 .rank-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
-.top-1 .rank-avatar { background: white; border: 1px solid #fde047; }
-.current-user .rank-avatar { background: #e0e7ff; border: 2px solid #c7d2fe; color: var(--primary); font-weight: bold; }
+.top-1 .rank-avatar { background: #1e293b; border: 1px solid #fde047; }
+.current-user .rank-avatar { background: #312e81; border: 2px solid #4f46e5; color: #a5b4fc; font-weight: bold; }
 .others .rank-avatar { background: var(--border-light); font-size: 1.25rem; }
 
 .rank-name { font-size: 0.875rem; font-weight: 700; }
 .rank-subtitle { font-size: 0.75rem; color: var(--text-muted); }
-.top-1 .rank-subtitle { color: #b45309; }
+.top-1 .rank-subtitle { color: #fbbf24; }
 
 .rank-score { text-align: right; }
 .rank-score .score-num { font-size: 1.125rem; font-weight: 700; }
 .rank-score .score-pts { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
-.top-1 .rank-score .score-num { color: #d97706; font-weight: 900; }
+.top-1 .rank-score .score-num { color: #fbbf24; font-weight: 900; }
 
 .leaderboard-footer {
-    padding: 1rem; background-color: #f8fafc; border-top: 1px solid var(--border-light);
-    border-radius: 0 0 1rem 1rem; text-align: center; font-size: 0.75rem; color: var(--text-muted);
+    padding: 1rem 1.25rem; 
+    background-color: #0f172a; 
+    border-top: 1px solid var(--border-light);
+    text-align: center; 
+    font-size: 0.75rem; 
+    color: var(--text-muted);
+}
+
+.view-full-leaderboard {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.875rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+    color: white;
+    border: none;
+    border-radius: 0 0 1rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.view-full-leaderboard::after {
+    content: '→';
+    position: absolute;
+    right: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.view-full-leaderboard:hover::after {
+    transform: translateX(4px);
+}
+
+.view-full-leaderboard:hover {
+    background: linear-gradient(135deg, var(--primary-hover) 0%, #6d28d9 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+}
+
+.view-full-leaderboard:active {
+    transform: translateY(0);
+}
+
+.view-full-leaderboard:focus {
+    outline: 2px solid white;
+    outline-offset: -4px;
 }
 
 /* ========================================================
-  7. NAVEGACIÓN MÓVIL (Barra inferior)
+  7. MODAL DE CLASIFICACIÓN COMPLETA
+  ========================================================
+*/
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: var(--bg-card);
+    border-radius: 1.5rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to right, #0f172a, #1e293b);
+    border-radius: 1.5rem 1.5rem 0 0;
+}
+
+.modal-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.modal-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.modal-close span {
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.modal-close:hover {
+    background-color: var(--border-light);
+    color: #ef4444;
+}
+
+.modal-close:hover span {
+    transform: rotate(90deg);
+}
+
+.modal-close:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.modal-body {
+    padding: 1rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.full-ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.full-ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    background-color: var(--bg-body);
+    border: 1px solid var(--border-light);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
+}
+
+.full-ranking-item:hover {
+    background-color: #1e293b;
+    transform: translateX(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.position-badge {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    min-width: 35px;
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.full-ranking-item:hover .position-badge {
+    transform: scale(1.15);
+}
+
+/* Destacar los 3 primeros puestos */
+.full-ranking-item.position-1 {
+    background-color: #422006;
+    border: 2px solid #92400e;
+}
+
+.full-ranking-item.position-1 .position-badge {
+    color: #fbbf24;
+    font-size: 1.25rem;
+}
+
+.full-ranking-item.position-2 {
+    background-color: #1e3a5f;
+    border: 2px solid #3b82f6;
+}
+
+.full-ranking-item.position-2 .position-badge {
+    color: #93c5fd;
+    font-size: 1.125rem;
+}
+
+.full-ranking-item.position-3 {
+    background-color: #3f2832;
+    border: 2px solid #86198f;
+}
+
+.full-ranking-item.position-3 .position-badge {
+    color: #e9d5ff;
+    font-size: 1.125rem;
+}
+
+/* Destacar usuario actual */
+.full-ranking-item.current-user-full {
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.full-ranking-item .rank-user-info {
+    flex: 1;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    background-color: #0f172a;
+    border-top: 1px solid var(--border-light);
+    border-radius: 0 0 1.5rem 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.reward-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.reward-info svg {
+    color: #fbbf24;
+    flex-shrink: 0;
+}
+
+/* ========================================================
+  8. NAVEGACIÓN MÓVIL (Barra inferior)
   ========================================================
 */
 .mobile-nav {
@@ -271,13 +737,23 @@ body {
     background: none; border: none; display: flex; flex-direction: column;
     align-items: center; justify-content: center; width: 100%;
     color: var(--text-muted); cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
 }
-.mobile-btn.active { color: var(--primary); }
-.mobile-btn svg { width: 24px; height: 24px; margin-bottom: 2px; }
+.mobile-btn.active { 
+    color: var(--primary);
+    background-color: rgba(99, 102, 241, 0.1);
+}
+.mobile-btn:hover {
+    background-color: rgba(99, 102, 241, 0.05);
+}
+.mobile-btn svg { width: 24px; height: 24px; margin-bottom: 2px; transition: transform 0.2s ease; }
+.mobile-btn:hover svg { transform: translateY(-2px); }
 .mobile-btn span { font-size: 0.65rem; font-weight: 500; }
 
 /* ========================================================
-  8. DISEÑO RESPONSIVE (Media Queries)
+  9. DISEÑO RESPONSIVE (Media Queries)
   Propósito: Adaptar la interfaz a los diferentes tamaños de pantalla.
   ========================================================
 */
@@ -294,6 +770,18 @@ body {
     /* Limpieza de la cabecera para ahorrar espacio */
     .profile-info { display: none; } 
     .history-link { display: none; }
+    
+    /* Leyenda compacta en móvil */
+    .priority-legend {
+        padding: 0.75rem;
+        gap: 1rem;
+        font-size: 0.7rem;
+    }
+    
+    .legend-color {
+        width: 16px;
+        height: 16px;
+    }
     
     /* Reorganización de la tarjeta de tarea para pantallas estrechas */
     .task-card {
@@ -315,4 +803,29 @@ body {
     
     /* Activación del menú diseñado ergonómicamente para pulgares */
     .mobile-nav { display: block; }
+    
+    /* Adaptación del modal para móviles */
+    .modal-content {
+        width: 95%;
+        max-height: 90vh;
+        border-radius: 1rem;
+    }
+    
+    .modal-header {
+        padding: 1rem;
+        border-radius: 1rem 1rem 0 0;
+    }
+    
+    .modal-header h2 {
+        font-size: 1rem;
+    }
+    
+    .full-ranking-item {
+        padding: 0.75rem;
+    }
+    
+    .position-badge {
+        min-width: 30px;
+        font-size: 0.875rem;
+    }
 }

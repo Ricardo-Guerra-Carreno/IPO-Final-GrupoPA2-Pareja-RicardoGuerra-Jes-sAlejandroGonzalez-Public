@@ -55,10 +55,29 @@
                 <header class="section-header">
                     <div>
                         <h1>Mis Tareas Pendientes</h1>
-                        <p>Tienes 3 tareas asignadas para esta semana.</p>
+                        <p class="section-subtitle">📋 Tienes <strong>3 tareas</strong> asignadas para esta semana. ¡Completa tareas para ganar puntos!</p>
                     </div>
-                    <a href="#" class="history-link">Ver historial completado &rarr;</a>
+                    <a href="#" class="history-link">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Ver completadas
+                    </a>
                 </header>
+
+                <!-- Leyenda de colores de prioridad -->
+                <div class="priority-legend">
+                    <div class="legend-item">
+                        <div class="legend-color urgent-color"></div>
+                        <span>Urgente (Hoy)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color medium-color"></div>
+                        <span>Próximamente</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color low-color"></div>
+                        <span>Sin prisa</span>
+                    </div>
+                </div>
 
                 <div class="tasks-list">
                     
@@ -86,10 +105,16 @@
                         <!-- Zona de recompensa y acción -->
                         <div class="task-actions">
                             <div class="points-reward">
-                                <span class="pts-number">+10</span>
-                                <span class="pts-label">Puntos</span>
+                                <span class="pts-icon">⭐</span>
+                                <div>
+                                    <span class="pts-number">+10</span>
+                                    <span class="pts-label">Puntos</span>
+                                </div>
                             </div>
-                            <button class="btn-complete">Completar</button>
+                            <button class="btn-complete" aria-label="Marcar como completada">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                Completar
+                            </button>
                         </div>
                     </article>
 
@@ -110,10 +135,16 @@
                         </div>
                         <div class="task-actions">
                             <div class="points-reward">
-                                <span class="pts-number">+25</span>
-                                <span class="pts-label">Puntos</span>
+                                <span class="pts-icon">⭐</span>
+                                <div>
+                                    <span class="pts-number">+25</span>
+                                    <span class="pts-label">Puntos</span>
+                                </div>
                             </div>
-                            <button class="btn-complete">Completar</button>
+                            <button class="btn-complete" aria-label="Marcar como completada">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                Completar
+                            </button>
                         </div>
                     </article>
 
@@ -134,10 +165,16 @@
                         </div>
                         <div class="task-actions">
                             <div class="points-reward">
-                                <span class="pts-number">+50</span>
-                                <span class="pts-label">Puntos</span>
+                                <span class="pts-icon">⭐</span>
+                                <div>
+                                    <span class="pts-number">+50</span>
+                                    <span class="pts-label">Puntos</span>
+                                </div>
                             </div>
-                            <button class="btn-complete">Completar</button>
+                            <button class="btn-complete" aria-label="Marcar como completada">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                Completar
+                            </button>
                         </div>
                     </article>
 
@@ -153,7 +190,10 @@
                 <div class="leaderboard-widget">
                     
                     <div class="leaderboard-header">
-                        <h2>🏆 Clasificación del Piso</h2>
+                        <div>
+                            <h2>🏆 Clasificación del Piso</h2>
+                            <p class="leaderboard-hint">Los puntos se actualizan en tiempo real</p>
+                        </div>
                         <span class="month-tag">Este Mes</span>
                     </div>
 
@@ -208,6 +248,12 @@
                         La recompensa mensual: <strong>Cena pagada por los perdedores 🍕</strong>
                     </div>
 
+                    <!-- Botón para ver clasificación completa -->
+                    <button class="view-full-leaderboard" onclick="openLeaderboardModal()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        Ver clasificación completa
+                    </button>
+
                 </div>
             </aside>
 
@@ -236,6 +282,177 @@
             </button>
         </div>
     </nav>
+
+    <!-- 
+      === MODAL DE CLASIFICACIÓN COMPLETA ===
+      Propósito: Mostrar todos los usuarios del piso en una vista dedicada.
+    -->
+    <div id="leaderboardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>🏆 Clasificación Completa del Piso</h2>
+                    <p class="modal-subtitle">Todos los compañeros del piso - Mes actual</p>
+                </div>
+                <button class="modal-close" onclick="closeLeaderboardModal()" aria-label="Cerrar ventana">
+                    <span>&times;</span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="full-ranking-list">
+                    
+                    <!-- Puesto 1 -->
+                    <div class="full-ranking-item position-1">
+                        <div class="position-badge">1º</div>
+                        <div class="rank-user-info">
+                            <div class="rank-avatar">👩🏻</div>
+                            <div>
+                                <p class="rank-name">Marta</p>
+                                <p class="rank-subtitle">Imparable 🔥</p>
+                            </div>
+                        </div>
+                        <div class="rank-score">
+                            <span class="score-num">420</span>
+                            <span class="score-pts">pts</span>
+                        </div>
+                    </div>
+
+                    <!-- Puesto 2 (Usuario Actual) -->
+                    <div class="full-ranking-item position-2 current-user-full">
+                        <div class="position-badge">2º</div>
+                        <div class="rank-user-info">
+                            <div class="rank-avatar">A</div>
+                            <div>
+                                <p class="rank-name">Álex (Tú)</p>
+                                <p class="rank-subtitle">¡A por el líder!</p>
+                            </div>
+                        </div>
+                        <div class="rank-score">
+                            <span class="score-num">280</span>
+                            <span class="score-pts">pts</span>
+                        </div>
+                    </div>
+
+                    <!-- Puesto 3 -->
+                    <div class="full-ranking-item position-3">
+                        <div class="position-badge">3º</div>
+                        <div class="rank-user-info">
+                            <div class="rank-avatar">👨🏽</div>
+                            <div>
+                                <p class="rank-name">Carlos</p>
+                                <p class="rank-subtitle">Necesita un empujón</p>
+                            </div>
+                        </div>
+                        <div class="rank-score">
+                            <span class="score-num">150</span>
+                            <span class="score-pts">pts</span>
+                        </div>
+                    </div>
+
+                    <!-- Puesto 4 -->
+                    <div class="full-ranking-item">
+                        <div class="position-badge">4º</div>
+                        <div class="rank-user-info">
+                            <div class="rank-avatar">👩🏼</div>
+                            <div>
+                                <p class="rank-name">Laura</p>
+                                <p class="rank-subtitle">En progreso</p>
+                            </div>
+                        </div>
+                        <div class="rank-score">
+                            <span class="score-num">125</span>
+                            <span class="score-pts">pts</span>
+                        </div>
+                    </div>
+
+                    <!-- Puesto 5 -->
+                    <div class="full-ranking-item">
+                        <div class="position-badge">5º</div>
+                        <div class="rank-user-info">
+                            <div class="rank-avatar">👨🏻</div>
+                            <div>
+                                <p class="rank-name">David</p>
+                                <p class="rank-subtitle">Puede mejorar</p>
+                            </div>
+                        </div>
+                        <div class="rank-score">
+                            <span class="score-num">95</span>
+                            <span class="score-pts">pts</span>
+                        </div>
+                    </div>
+
+                    <!-- Puesto 6 -->
+                    <div class="full-ranking-item">
+                        <div class="position-badge">6º</div>
+                        <div class="rank-user-info">
+                            <div class="rank-avatar">👩🏽</div>
+                            <div>
+                                <p class="rank-name">Ana</p>
+                                <p class="rank-subtitle">¡Ánimo!</p>
+                            </div>
+                        </div>
+                        <div class="rank-score">
+                            <span class="score-num">70</span>
+                            <span class="score-pts">pts</span>
+                        </div>
+                    </div>
+
+                    <!-- Puesto 7 -->
+                    <div class="full-ranking-item">
+                        <div class="position-badge">7º</div>
+                        <div class="rank-user-info">
+                            <div class="rank-avatar">👨🏾</div>
+                            <div>
+                                <p class="rank-name">Miguel</p>
+                                <p class="rank-subtitle">Recién llegado</p>
+                            </div>
+                        </div>
+                        <div class="rank-score">
+                            <span class="score-num">45</span>
+                            <span class="score-pts">pts</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <div class="reward-info">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
+                    <p>Recompensa mensual: <strong>Cena pagada por los perdedores 🍕</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para controlar el modal -->
+    <script>
+        function openLeaderboardModal() {
+            document.getElementById('leaderboardModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+        }
+
+        function closeLeaderboardModal() {
+            document.getElementById('leaderboardModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cerrar modal al hacer clic fuera del contenido
+        window.onclick = function(event) {
+            const modal = document.getElementById('leaderboardModal');
+            if (event.target === modal) {
+                closeLeaderboardModal();
+            }
+        }
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeLeaderboardModal();
+            }
+        });
+    </script>
 
 </body>
 </html>
