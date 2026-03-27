@@ -44,11 +44,10 @@
                     </div>
                 </div>
 
-                <div class="profile-info">
-                    <div class="name">Hola, Álex</div>
-                    <div class="points">280 Puntos totales</div>
+                <div class="profile-chip" role="button" tabindex="0" aria-label="Abrir perfil de Álex">
+                    <div class="profile-name">Álex</div>
+                    <div class="avatar">A</div>
                 </div>
-                <div class="avatar">A</div>
             </div>
         </div>
     </nav>
@@ -78,20 +77,6 @@
                         Ver completadas
                     </a>
                 </header>
-                <div class="priority-legend">
-                    <div class="legend-item">
-                        <div class="legend-color urgent-color"></div>
-                        <span>Urgente (Hoy)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color medium-color"></div>
-                        <span>Próximamente</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color low-color"></div>
-                        <span>Sin prisa</span>
-                    </div>
-                </div>
 
                 <div class="tasks-list">
                     
@@ -106,14 +91,7 @@
                             <div class="task-icon">🗑️</div>
                             <div class="task-details">
                                 <h3>Bajar la basura y reciclaje</h3>
-                                <div class="badges-container">
-                                    <!-- Etiquetas semánticas: Uso del verde para "Fácil" y rojo para "Urgente" -->
-                                    <span class="badge easy">Fácil</span>
-                                    <span class="badge urgent">
-                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        Hoy (antes de las 22:00)
-                                    </span>
-                                </div>
+                                <p class="task-meta">Hoy (antes de las 22:00)</p>
                             </div>
                         </div>
                         <!-- Zona de recompensa y acción -->
@@ -138,13 +116,7 @@
                             <div class="task-icon">🍽️</div>
                             <div class="task-details">
                                 <h3>Recoger lavavajillas y encimera</h3>
-                                <div class="badges-container">
-                                    <span class="badge medium-diff">Media</span>
-                                    <span class="badge neutral">
-                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                        Para mañana
-                                    </span>
-                                </div>
+                                <p class="task-meta">Para mañana</p>
                             </div>
                         </div>
                         <div class="task-actions">
@@ -168,13 +140,7 @@
                             <div class="task-icon">🧽</div>
                             <div class="task-details">
                                 <h3>Limpieza a fondo del baño</h3>
-                                <div class="badges-container">
-                                    <span class="badge urgent">Difícil</span>
-                                    <span class="badge neutral" id="bathTaskTime">
-                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                        Quedan 4 días
-                                    </span>
-                                </div>
+                                <p class="task-meta" id="bathTaskTime">Quedan 4 días</p>
                             </div>
                         </div>
                         <div class="task-actions">
@@ -300,7 +266,12 @@
                                 <p class="activity-text"><strong>Marta</strong> completó <em>"Bajar basura"</em></p>
                                 <span class="activity-time">hace 10 min</span>
                             </div>
-                            <span class="activity-points">+10 pts</span>
+                            <div class="activity-actions">
+                                <span class="activity-points">+10 pts</span>
+                                <button class="activity-audit-btn" onclick="toggleAuditActivity(this, event)" aria-pressed="false">
+                                    Auditar
+                                </button>
+                            </div>
                         </div>
                         <div class="activity-item">
                             <div class="activity-avatar">👨🏽</div>
@@ -308,7 +279,12 @@
                                 <p class="activity-text"><strong>Carlos</strong> completó <em>"Recoger lavavajillas"</em></p>
                                 <span class="activity-time">hace 35 min</span>
                             </div>
-                            <span class="activity-points">+25 pts</span>
+                            <div class="activity-actions">
+                                <span class="activity-points">+25 pts</span>
+                                <button class="activity-audit-btn" onclick="toggleAuditActivity(this, event)" aria-pressed="false">
+                                    Auditar
+                                </button>
+                            </div>
                         </div>
                         <div class="activity-item">
                             <div class="activity-avatar">👩🏼</div>
@@ -316,7 +292,9 @@
                                 <p class="activity-text"><strong>Laura</strong> pausó <em>"Limpieza baño"</em></p>
                                 <span class="activity-time">hace 2 horas</span>
                             </div>
-                            <span class="activity-points">Pausa activa</span>
+                            <div class="activity-actions">
+                                <span class="activity-points">Pausa activa</span>
+                            </div>
                         </div>
                         <div class="activity-item">
                             <div class="activity-avatar">👨🏻</div>
@@ -324,7 +302,12 @@
                                 <p class="activity-text"><strong>David</strong> rescató tarea de Laura</p>
                                 <span class="activity-time">hace 1 h 50 min</span>
                             </div>
-                            <span class="activity-points">+50 pts</span>
+                            <div class="activity-actions">
+                                <span class="activity-points">+50 pts</span>
+                                <button class="activity-audit-btn" onclick="toggleAuditActivity(this, event)" aria-pressed="false">
+                                    Auditar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -549,7 +532,7 @@
         function toggleTaskTimeout(button, event) {
             event.preventDefault();
             const taskCard = button.closest('.task-card');
-            const timeElement = taskCard.querySelector('[id$="TaskTime"]') || taskCard.querySelector('.badge.neutral');
+            const timeElement = taskCard.querySelector('[id$="TaskTime"]') || taskCard.querySelector('.task-meta');
             const completeBtn = taskCard.querySelector('.btn-complete');
             const isTimeout = button.classList.toggle('active');
             
@@ -559,7 +542,7 @@
                 completeBtn.disabled = true;
                 
                 // Cambiar el badge de tiempo
-                timeElement.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> EN PAUSA';
+                timeElement.textContent = 'EN PAUSA';
                 timeElement.classList.add('paused-badge');
                 
                 // Actualizar botón Pausa
@@ -579,7 +562,7 @@
                 completeBtn.disabled = false;
                 
                 // Revertir badge
-                timeElement.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> Quedan 4 días';
+                timeElement.textContent = 'Quedan 4 días';
                 timeElement.classList.remove('paused-badge');
                 
                 // Revertir botón
@@ -589,6 +572,46 @@
                 // Remover indicador
                 const indicator = taskCard.querySelector('.pause-indicator');
                 if (indicator) indicator.remove();
+            }
+        }
+
+        // MEJORA 4: Auditoria comunitaria para revocar puntos por tareas incompletas o fraudulentas
+        function toggleAuditActivity(button, event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const activityItem = button.closest('.activity-item');
+            const activityDetails = activityItem.querySelector('.activity-details');
+            const pointsElement = activityItem.querySelector('.activity-points');
+
+            if (!activityItem.dataset.originalPoints) {
+                activityItem.dataset.originalPoints = pointsElement.textContent.trim();
+            }
+
+            const isAudited = activityItem.classList.toggle('audited');
+            let auditNote = activityDetails.querySelector('.audit-note');
+
+            if (isAudited) {
+                pointsElement.textContent = 'Puntos revocados';
+                button.textContent = 'Restaurar';
+                button.setAttribute('aria-pressed', 'true');
+                button.classList.add('active');
+
+                if (!auditNote) {
+                    auditNote = document.createElement('span');
+                    auditNote.className = 'audit-note';
+                    auditNote.textContent = 'Validacion comunitaria: actividad marcada como incompleta';
+                    activityDetails.appendChild(auditNote);
+                }
+            } else {
+                pointsElement.textContent = activityItem.dataset.originalPoints;
+                button.textContent = 'Auditar';
+                button.setAttribute('aria-pressed', 'false');
+                button.classList.remove('active');
+
+                if (auditNote) {
+                    auditNote.remove();
+                }
             }
         }
     </script>
