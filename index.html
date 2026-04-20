@@ -44,9 +44,9 @@
                     </div>
                 </div>
 
-                <div class="profile-chip" role="button" tabindex="0" aria-label="Abrir perfil de Álex">
-                    <div class="profile-name">Álex</div>
-                    <div class="avatar">A</div>
+                <div class="profile-chip" role="button" tabindex="0" aria-label="Abrir perfil de Álex" onclick="openProfileModal()" onkeydown="handleProfileKeyOpen(event)">
+                    <div id="profileNameDisplay" class="profile-name">Álex</div>
+                    <div class="avatar current-user-avatar">A</div>
                 </div>
             </div>
         </div>
@@ -72,7 +72,7 @@
                         <h1>Mis Tareas Pendientes</h1>
                         <p class="section-subtitle">📋 Tienes <strong>3 tareas</strong> asignadas para esta semana. ¡Completa tareas para ganar puntos!</p>
                     </div>
-                    <a href="#" class="history-link">
+                    <a href="#" class="history-link" onclick="openHistoryModal(event)">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Ver completadas
                     </a>
@@ -85,7 +85,7 @@
                       Estructura HCI: Patrón de lectura en "F". Izquierda (Icono identificativo) -> 
                       Centro (Detalles) -> Derecha (Acción/Recompensa).
                     -->
-                    <article class="task-card urgent">
+                    <article class="task-card urgent" data-task-id="task-basura" data-base-points="10" data-urgency="urgent">
                         <div class="task-info">
                             <!-- Reconocimiento visual rápido -->
                             <div class="task-icon">🗑️</div>
@@ -111,7 +111,7 @@
                     </article>
 
                     <!-- TAREA 2: Prioridad Media -->
-                    <article class="task-card medium">
+                    <article class="task-card medium" data-task-id="task-lavavajillas" data-base-points="25" data-urgency="medium">
                         <div class="task-info">
                             <div class="task-icon">🍽️</div>
                             <div class="task-details">
@@ -135,7 +135,7 @@
                     </article>
 
                     <!-- TAREA 3: Prioridad Baja (Largo Plazo) -->
-                    <article class="task-card low">
+                    <article class="task-card low" data-task-id="task-bano" data-base-points="50" data-urgency="low">
                         <div class="task-info">
                             <div class="task-icon">🧽</div>
                             <div class="task-details">
@@ -155,7 +155,7 @@
                                 <!-- MEJORA 3: Botón de Timeout para tareas difíciles -->
                                 <button class="btn-timeout" title="Pausar esta tarea - Otro compañero puede rescatarla" onclick="toggleTaskTimeout(this, event)">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 3h12v4l-3 3 3 3v8H6v-8l3-3-3-3V3z"></path>
                                     </svg>
                                     <span>Pausa</span>
                                 </button>
@@ -205,14 +205,14 @@
                         <!-- Puesto 2 (Usuario Actual): Resaltado sutilmente para ubicación rápida -->
                         <div class="ranking-item current-user">
                             <div class="rank-user-info">
-                                <div class="rank-avatar">A</div>
+                                <div class="rank-avatar current-user-avatar">A</div>
                                 <div>
-                                    <p class="rank-name">Álex (Tú)</p>
+                                    <p class="rank-name current-user-name">Álex (Tú)</p>
                                     <p class="rank-subtitle">¡A por el líder!</p>
                                 </div>
                             </div>
                             <div class="rank-score">
-                                <span class="score-num">280</span>
+                                <span class="score-num current-user-score">280</span>
                                 <span class="score-pts">pts</span>
                             </div>
                         </div>
@@ -245,72 +245,17 @@
 
                 </div>
 
-                <!-- MEJORA 2: Log de Actividad Asíncrono (Activity Feed) - Reubicado debajo del Leaderboard -->
-                <div class="activity-log-wrapper">
-                    <button class="activity-log-toggle" onclick="toggleActivityLog()" aria-expanded="false" aria-controls="activityLogContent">
-                        <div class="toggle-header">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span>📋 Actividad Reciente</span>
-                        </div>
-                        <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                <button class="activity-log-trigger" type="button" onclick="openActivityLogModal()" aria-label="Abrir actividad reciente">
+                    <div class="toggle-header">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                    </button>
-
-                    <div id="activityLogContent" class="activity-log-content" style="display: none;">
-                        <div class="activity-item">
-                            <div class="activity-avatar">👩🏻</div>
-                            <div class="activity-details">
-                                <p class="activity-text"><strong>Marta</strong> completó <em>"Bajar basura"</em></p>
-                                <span class="activity-time">hace 10 min</span>
-                            </div>
-                            <div class="activity-actions">
-                                <span class="activity-points">+10 pts</span>
-                                <button class="activity-audit-btn" onclick="toggleAuditActivity(this, event)" aria-pressed="false">
-                                    Auditar
-                                </button>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-avatar">👨🏽</div>
-                            <div class="activity-details">
-                                <p class="activity-text"><strong>Carlos</strong> completó <em>"Recoger lavavajillas"</em></p>
-                                <span class="activity-time">hace 35 min</span>
-                            </div>
-                            <div class="activity-actions">
-                                <span class="activity-points">+25 pts</span>
-                                <button class="activity-audit-btn" onclick="toggleAuditActivity(this, event)" aria-pressed="false">
-                                    Auditar
-                                </button>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-avatar">👩🏼</div>
-                            <div class="activity-details">
-                                <p class="activity-text"><strong>Laura</strong> pausó <em>"Limpieza baño"</em></p>
-                                <span class="activity-time">hace 2 horas</span>
-                            </div>
-                            <div class="activity-actions">
-                                <span class="activity-points">Pausa activa</span>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-avatar">👨🏻</div>
-                            <div class="activity-details">
-                                <p class="activity-text"><strong>David</strong> rescató tarea de Laura</p>
-                                <span class="activity-time">hace 1 h 50 min</span>
-                            </div>
-                            <div class="activity-actions">
-                                <span class="activity-points">+50 pts</span>
-                                <button class="activity-audit-btn" onclick="toggleAuditActivity(this, event)" aria-pressed="false">
-                                    Auditar
-                                </button>
-                            </div>
-                        </div>
+                        <span>📋 Actividad Reciente</span>
                     </div>
-                </div>
+                    <svg class="toggle-icon right" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
             </aside>
 
         </div>
@@ -378,14 +323,14 @@
                     <div class="full-ranking-item position-2 current-user-full">
                         <div class="position-badge">2º</div>
                         <div class="rank-user-info">
-                            <div class="rank-avatar">A</div>
+                            <div class="rank-avatar current-user-avatar">A</div>
                             <div>
-                                <p class="rank-name">Álex (Tú)</p>
+                                <p class="rank-name current-user-name">Álex (Tú)</p>
                                 <p class="rank-subtitle">¡A por el líder!</p>
                             </div>
                         </div>
                         <div class="rank-score">
-                            <span class="score-num">280</span>
+                                <span class="score-num current-user-score">280</span>
                             <span class="score-pts">pts</span>
                         </div>
                     </div>
@@ -482,50 +427,1046 @@
         </div>
     </div>
 
-    <!-- Script para controlar el modal -->
+    <div id="completedTasksModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>✅ Mis tareas completadas</h2>
+                    <p class="modal-subtitle">Historial del ultimo mes</p>
+                </div>
+                <button class="modal-close" onclick="closeHistoryModal()" aria-label="Cerrar historial">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="completedTasksSummary" class="history-summary"></div>
+                <div id="completedTasksList" class="history-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sharePointsModal" class="modal">
+        <div class="modal-content share-points-modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>🤝 Repartir puntos del rescate</h2>
+                    <p class="modal-subtitle" id="sharePointsSubtitle">Decide cuanto quieres compartir</p>
+                </div>
+                <button class="modal-close" onclick="closeSharePointsModal()" aria-label="Cerrar reparto">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p class="share-copy" id="shareTaskCopy"></p>
+                <div class="share-options" id="shareOptionsGroup">
+                    <button type="button" class="share-option active" data-share="0" onclick="selectSharePercentage(0)">0%</button>
+                    <button type="button" class="share-option" data-share="25" onclick="selectSharePercentage(25)">25%</button>
+                    <button type="button" class="share-option" data-share="50" onclick="selectSharePercentage(50)">50%</button>
+                </div>
+                <div class="share-preview" id="sharePreview"></div>
+            </div>
+
+            <div class="modal-footer modal-actions">
+                <button class="btn-timeout" type="button" onclick="closeSharePointsModal()">
+                    Cancelar
+                </button>
+                <button class="btn-complete" type="button" onclick="confirmRescuedTaskCompletion()">
+                    Confirmar reparto y completar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="profileModal" class="modal">
+        <div class="modal-content profile-modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>👤 Mi perfil</h2>
+                    <p class="modal-subtitle">Informacion personal y actividad</p>
+                </div>
+                <button class="modal-close" onclick="closeProfileModal()" aria-label="Cerrar perfil">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body profile-body">
+                <div class="profile-info-grid">
+                    <div class="profile-field">
+                        <span class="profile-field-label">Nombre completo</span>
+                        <p id="profileFullName">Álex Fernández Ruiz</p>
+                    </div>
+                    <div class="profile-field">
+                        <span class="profile-field-label">Correo</span>
+                        <p id="profileEmail">alex.fernandez@example.com</p>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="btn-timeout" type="button" onclick="openPasswordResetModal()">Cambiar contraseña</button>
+                    <button class="activity-audit-btn profile-logout-btn" type="button" onclick="showLogoutFeedback()">Cerrar sesion</button>
+                </div>
+
+                <div class="profile-chart-card">
+                    <h3>Tareas realizadas por dia (ultimo mes)</h3>
+                    <p id="profileChartScaleInfo" class="chart-scale-info"></p>
+                    <div class="profile-chart" id="profileChartBars"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="activityLogModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>📋 Actividad reciente</h2>
+                    <p class="modal-subtitle">Movimientos del piso en tiempo real</p>
+                </div>
+                <button class="modal-close" onclick="closeActivityLogModal()" aria-label="Cerrar actividad">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div id="activityLogContent" class="modal-body activity-log-content">
+                <div class="activity-item">
+                    <div class="activity-avatar">👩🏻</div>
+                    <div class="activity-details">
+                        <p class="activity-text"><strong>Marta</strong> completó <em>"Bajar basura"</em></p>
+                        <span class="activity-time">hace 10 min</span>
+                    </div>
+                    <div class="activity-actions">
+                        <span class="activity-points">+10 pts</span>
+                        <button class="activity-audit-btn" onclick="toggleAuditActivity(this, event)" aria-pressed="false">
+                            Auditar
+                        </button>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-avatar">👨🏽</div>
+                    <div class="activity-details">
+                        <p class="activity-text"><strong>Carlos</strong> completó <em>"Recoger lavavajillas"</em></p>
+                        <span class="activity-time">hace 35 min</span>
+                    </div>
+                    <div class="activity-actions">
+                        <span class="activity-points">+25 pts</span>
+                        <button class="activity-audit-btn" onclick="toggleAuditActivity(this, event)" aria-pressed="false">
+                            Auditar
+                        </button>
+                    </div>
+                </div>
+                <div class="activity-item" data-paused-by="Laura" data-paused-at="2026-04-18T10:00:00" data-base-points="50" data-task-name="Limpieza baño">
+                    <div class="activity-avatar">👩🏼</div>
+                    <div class="activity-details">
+                        <p class="activity-text"><strong>Laura</strong> pausó <em>"Limpieza baño"</em></p>
+                        <span class="activity-time">hace 2 horas</span>
+                    </div>
+                    <div class="activity-actions">
+                        <span class="activity-points">Pausa activa</span>
+                        <button class="activity-rescue-btn" onclick="rescuePausedTask(this, event)">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M13 6l6 6-6 6"></path>
+                            </svg>
+                            Rescatar
+                        </button>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-avatar">👨🏻</div>
+                    <div class="activity-details">
+                        <p class="activity-text"><strong>David</strong> rescató tarea de Laura</p>
+                        <span class="activity-time">hace 1 h 50 min</span>
+                    </div>
+                    <div class="activity-actions">
+                        <span class="activity-points">+50 pts</span>
+                        <button class="activity-audit-btn" onclick="toggleAuditActivity(this, event)" aria-pressed="false">
+                            Auditar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="passwordResetModal" class="modal">
+        <div class="modal-content share-points-modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>🔐 Cambiar contraseña</h2>
+                    <p class="modal-subtitle">Actualiza tus credenciales de acceso</p>
+                </div>
+                <button class="modal-close" onclick="closePasswordResetModal()" aria-label="Cerrar cambio de contraseña">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form class="modal-body password-form" onsubmit="submitPasswordChange(event)">
+                <label class="password-field">
+                    <span>Contraseña antigua</span>
+                    <input type="password" id="oldPassword" required minlength="6">
+                </label>
+                <label class="password-field">
+                    <span>Contraseña nueva</span>
+                    <input type="password" id="newPassword" required minlength="6">
+                </label>
+                <label class="password-field">
+                    <span>Repetir contraseña nueva</span>
+                    <input type="password" id="newPasswordConfirm" required minlength="6">
+                </label>
+                <button type="button" class="forgot-password-link" onclick="sendForgotPasswordEmail()">He olvidado mi contraseña</button>
+                <p id="passwordFormFeedback" class="password-feedback" aria-live="polite"></p>
+                <div class="modal-actions">
+                    <button class="btn-timeout" type="button" onclick="closePasswordResetModal()">Cancelar</button>
+                    <button class="btn-complete" type="submit">Guardar contraseña</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content login-modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 id="authModalTitle">🚪 Iniciar sesión</h2>
+                    <p id="authModalSubtitle" class="modal-subtitle">Accede para personalizar tu usuario en el prototipo</p>
+                </div>
+            </div>
+
+            <form id="loginForm" class="modal-body login-form" onsubmit="submitLogin(event)">
+                <label class="password-field">
+                    <span>Nombre de usuario</span>
+                    <input type="text" id="loginName" required minlength="2" maxlength="30" placeholder="Ej: Ricardo">
+                </label>
+                <label class="password-field">
+                    <span>Correo</span>
+                    <input type="email" id="loginEmail" required placeholder="tu.correo@ejemplo.com">
+                </label>
+                <label class="password-field">
+                    <span>Contraseña</span>
+                    <input type="password" id="loginPassword" required minlength="6" placeholder="******">
+                </label>
+                <p id="loginFeedback" class="password-feedback" aria-live="polite"></p>
+                <p class="auth-switch-copy">¿No tienes cuenta?
+                    <button class="auth-switch-btn" type="button" onclick="openRegisterView()">Registrarme</button>
+                </p>
+                <div class="modal-actions">
+                    <button class="btn-complete" type="submit">Entrar</button>
+                </div>
+            </form>
+
+            <form id="registerForm" class="modal-body login-form" style="display: none;" onsubmit="submitRegistration(event)">
+                <label class="password-field">
+                    <span>Nombre</span>
+                    <input type="text" id="registerFirstName" required minlength="2" maxlength="30" placeholder="Ej: Ricardo">
+                </label>
+                <label class="password-field">
+                    <span>Apellidos</span>
+                    <input type="text" id="registerLastName" required minlength="2" maxlength="50" placeholder="Ej: Guerra Pérez">
+                </label>
+                <label class="password-field">
+                    <span>Correo</span>
+                    <input type="email" id="registerEmail" required placeholder="tu.correo@ejemplo.com">
+                </label>
+                <label class="password-field">
+                    <span>Ocupación</span>
+                    <select id="registerOccupation" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="piso-estudiantes">Piso de estudiantes</option>
+                        <option value="casa-propia">Casa propia</option>
+                        <option value="residencia">Residencia</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </label>
+                <label class="password-field">
+                    <span>Contraseña</span>
+                    <input type="password" id="registerPassword" required minlength="6" placeholder="******">
+                </label>
+                <label class="password-field">
+                    <span>Repetir contraseña</span>
+                    <input type="password" id="registerPasswordConfirm" required minlength="6" placeholder="******">
+                </label>
+                <p id="registerFeedback" class="password-feedback" aria-live="polite"></p>
+                <p class="auth-switch-copy">¿Ya tienes cuenta?
+                    <button class="auth-switch-btn" type="button" onclick="openLoginView()">Iniciar sesión</button>
+                </p>
+                <div class="modal-actions">
+                    <button class="btn-complete" type="submit">Crear cuenta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script funcional de la aplicación -->
     <script>
-        function openLeaderboardModal() {
-            document.getElementById('leaderboardModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+        const DAY_MS = 24 * 60 * 60 * 1000;
+        let currentUserName = 'Álex';
+        let currentUserFullName = 'Álex Fernández Ruiz';
+        let currentUserEmail = 'alex.fernandez@example.com';
+        let currentUserOccupation = 'piso-estudiantes';
+
+        function isoDaysAgo(daysAgo, hour, minute) {
+            const date = new Date();
+            date.setHours(hour, minute, 0, 0);
+            date.setDate(date.getDate() - daysAgo);
+            return date.toISOString();
         }
 
-        function closeLeaderboardModal() {
-            document.getElementById('leaderboardModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+        const appState = {
+            users: {
+                'Álex': 280,
+                'Marta': 420,
+                'Carlos': 150,
+                'Laura': 125,
+                'David': 95,
+                'Ana': 70,
+                'Miguel': 45
+            },
+            health: 85,
+            selectedShare: 0,
+            pendingRescuedCompletion: null,
+            nextAuditId: 1,
+            auditContexts: {},
+            session: {
+                isAuthenticated: false,
+                registeredAccounts: {
+                    'alex.fernandez@example.com': {
+                        name: 'Álex',
+                        fullName: 'Álex Fernández Ruiz',
+                        email: 'alex.fernandez@example.com',
+                        occupation: 'piso-estudiantes',
+                        password: '123456'
+                    }
+                }
+            },
+            completedTasks: [
+                {
+                    name: 'Ordenar armario comun',
+                    totalPoints: 20,
+                    gainedPoints: 20,
+                    sharedPoints: 0,
+                    sharedWith: null,
+                    rescued: false,
+                    date: isoDaysAgo(10, 19, 30)
+                },
+                {
+                    name: 'Aspirar salon',
+                    totalPoints: 30,
+                    gainedPoints: 30,
+                    sharedPoints: 0,
+                    sharedWith: null,
+                    rescued: false,
+                    date: isoDaysAgo(6, 12, 15)
+                },
+                {
+                    name: 'Lavar ventanas cocina',
+                    totalPoints: 40,
+                    gainedPoints: 30,
+                    sharedPoints: 10,
+                    sharedWith: 'Laura',
+                    rescued: true,
+                    date: isoDaysAgo(3, 18, 5)
+                }
+            ]
+        };
 
-        // Cerrar modal al hacer clic fuera del contenido
-        window.onclick = function(event) {
-            const modal = document.getElementById('leaderboardModal');
-            if (event.target === modal) {
-                closeLeaderboardModal();
-            }
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTaskCards();
+            bindTaskCompletion();
+            refreshPausedTaskCards();
+            refreshPausedActivities();
+            updateUserIdentityUI();
+            updatePendingCounter();
+            updateCurrentUserScores();
+            updateHealthIndicator();
+            renderCompletedTasksHistory();
+            renderProfileChart();
+            openLoginModal();
 
-        // Cerrar modal con tecla Escape
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeLeaderboardModal();
-            }
+            setInterval(() => {
+                refreshPausedTaskCards();
+                refreshPausedActivities();
+            }, 60000);
         });
 
-        // MEJORA 2: Función para abrir/cerrar el Log de Actividad
-        function toggleActivityLog() {
-            const content = document.getElementById('activityLogContent');
-            const toggle = document.querySelector('.activity-log-toggle');
-            const isOpen = content.style.display !== 'none';
-            
-            content.style.display = isOpen ? 'none' : 'block';
-            toggle.setAttribute('aria-expanded', !isOpen);
-            
-            // Agregar clase para animación
-            if (!isOpen) {
-                content.classList.add('activity-log-open');
-                content.classList.remove('activity-log-closed');
-            } else {
-                content.classList.add('activity-log-closed');
-                content.classList.remove('activity-log-open');
+        function initializeTaskCards() {
+            const cards = document.querySelectorAll('.tasks-list .task-card');
+            cards.forEach((card, index) => {
+                if (!card.dataset.taskId) {
+                    card.dataset.taskId = `task-${index + 1}`;
+                }
+
+                if (!card.dataset.basePoints) {
+                    const ptsText = card.querySelector('.pts-number')?.textContent || '+0';
+                    const pts = parseInt(ptsText.replace('+', ''), 10) || 0;
+                    card.dataset.basePoints = String(pts);
+                }
+
+                if (!card.dataset.urgency) {
+                    if (card.classList.contains('urgent')) card.dataset.urgency = 'urgent';
+                    else if (card.classList.contains('medium')) card.dataset.urgency = 'medium';
+                    else card.dataset.urgency = 'low';
+                }
+            });
+        }
+
+        function bindTaskCompletion() {
+            const tasksList = document.querySelector('.tasks-list');
+            if (!tasksList) return;
+
+            tasksList.addEventListener('click', (event) => {
+                const completeButton = event.target.closest('.btn-complete');
+                if (!completeButton) return;
+
+                const taskCard = completeButton.closest('.task-card');
+                if (!taskCard) return;
+
+                completeTask(taskCard);
+            });
+        }
+
+        function completeTask(taskCard) {
+            const isRescued = taskCard.dataset.rescued === 'true';
+
+            if (isRescued) {
+                appState.pendingRescuedCompletion = { taskCard };
+                appState.selectedShare = 0;
+                selectSharePercentage(0);
+                openSharePointsModal(taskCard);
+                return;
             }
+
+            finalizeTaskCompletion(taskCard, 0);
+        }
+
+        function finalizeTaskCompletion(taskCard, sharePercentage) {
+            const taskName = taskCard.querySelector('.task-details h3')?.textContent?.trim() || 'Tarea';
+            const totalPoints = getTaskAwardPoints(taskCard);
+            const rescuedFrom = taskCard.dataset.rescuedFrom || null;
+
+            const sharedPoints = rescuedFrom ? Math.round(totalPoints * (sharePercentage / 100)) : 0;
+            const gainedPoints = Math.max(0, totalPoints - sharedPoints);
+
+            appState.users[currentUserName] += gainedPoints;
+            if (rescuedFrom && sharedPoints > 0) {
+                if (!appState.users[rescuedFrom]) appState.users[rescuedFrom] = 0;
+                appState.users[rescuedFrom] += sharedPoints;
+                updateLeaderboardUserScore(rescuedFrom, appState.users[rescuedFrom]);
+            }
+
+            updateCurrentUserScores();
+
+            const healthGain = calculateHealthGain(taskCard);
+            updateHealth(appState.health + healthGain);
+
+            const completedTaskRecord = {
+                name: taskName,
+                totalPoints,
+                gainedPoints,
+                sharedPoints,
+                sharedWith: rescuedFrom,
+                rescued: Boolean(rescuedFrom),
+                date: new Date().toISOString()
+            };
+
+            appState.completedTasks.unshift(completedTaskRecord);
+
+            pushCompletionActivity(taskName, gainedPoints, rescuedFrom, sharedPoints, completedTaskRecord);
+
+            taskCard.remove();
+            updatePendingCounter();
+            renderCompletedTasksHistory();
+            renderProfileChart();
+
+            if (document.querySelectorAll('.tasks-list .task-card').length === 0) {
+                updateHealth(Math.min(100, appState.health + 5));
+            }
+        }
+
+        function calculateHealthGain(taskCard) {
+            if (taskCard.dataset.rescued === 'true') return 8;
+            if (taskCard.dataset.urgency === 'urgent') return 5;
+            if (taskCard.dataset.urgency === 'medium') return 6;
+            return 7;
+        }
+
+        function updatePendingCounter() {
+            const count = document.querySelectorAll('.tasks-list .task-card').length;
+            const subtitle = document.querySelector('.section-subtitle');
+            if (!subtitle) return;
+
+            subtitle.innerHTML = `📋 Tienes <strong>${count} tareas</strong> asignadas para esta semana. ¡Completa tareas para ganar puntos!`;
+        }
+
+        function getTaskAwardPoints(taskCard) {
+            if (taskCard.dataset.awardPoints) {
+                return parseInt(taskCard.dataset.awardPoints, 10) || 0;
+            }
+
+            const basePoints = parseInt(taskCard.dataset.basePoints || '0', 10) || 0;
+            const pausedAt = taskCard.dataset.pausedAt;
+
+            if (taskCard.dataset.isPaused === 'true' && pausedAt) {
+                return calculatePausedPoints(basePoints, pausedAt);
+            }
+
+            return basePoints;
+        }
+
+        function calculatePausedPoints(basePoints, pausedAt) {
+            const startedAt = new Date(pausedAt);
+            if (Number.isNaN(startedAt.getTime())) return basePoints;
+
+            const elapsedDays = Math.floor((Date.now() - startedAt.getTime()) / DAY_MS);
+            const reductionMultiplier = Math.max(0.2, 1 - (elapsedDays * 0.2));
+
+            return Math.max(1, Math.round(basePoints * reductionMultiplier));
+        }
+
+        function refreshPausedTaskCards() {
+            const cards = document.querySelectorAll('.tasks-list .task-card');
+
+            cards.forEach((card) => {
+                const pointsNumber = card.querySelector('.pts-number');
+                const pointsLabel = card.querySelector('.pts-label');
+                const timeElement = card.querySelector('[id$="TaskTime"]') || card.querySelector('.task-meta');
+                if (!pointsNumber || !pointsLabel || !timeElement) return;
+
+                const basePoints = parseInt(card.dataset.basePoints || '0', 10) || 0;
+
+                if (card.dataset.isPaused === 'true' && card.dataset.pausedAt) {
+                    const pausedPoints = calculatePausedPoints(basePoints, card.dataset.pausedAt);
+                    const elapsedDays = Math.floor((Date.now() - new Date(card.dataset.pausedAt).getTime()) / DAY_MS);
+                    pointsNumber.textContent = `+${pausedPoints}`;
+                    pointsLabel.textContent = 'Puntos degradados';
+                    timeElement.textContent = `EN PAUSA • ${elapsedDays} día(s)`;
+                    timeElement.classList.add('paused-badge');
+                } else if (card.dataset.awardPoints) {
+                    const adjustedPoints = parseInt(card.dataset.awardPoints, 10) || 0;
+                    pointsNumber.textContent = `+${adjustedPoints}`;
+                    pointsLabel.textContent = card.dataset.rescued === 'true' ? 'Puntos rescate' : 'Puntos ajustados';
+                } else {
+                    pointsNumber.textContent = `+${basePoints}`;
+                    pointsLabel.textContent = 'Puntos';
+                    if (timeElement.textContent.includes('EN PAUSA')) {
+                        timeElement.textContent = card.dataset.defaultMeta || 'Pendiente';
+                    }
+                    timeElement.classList.remove('paused-badge');
+                }
+            });
+        }
+
+        function refreshPausedActivities() {
+            const pausedItems = document.querySelectorAll('.activity-item[data-paused-at]');
+
+            pausedItems.forEach((item) => {
+                if (item.dataset.rescued === 'true') return;
+
+                const basePoints = parseInt(item.dataset.basePoints || '0', 10) || 0;
+                const pausedAt = item.dataset.pausedAt;
+                const currentPoints = calculatePausedPoints(basePoints, pausedAt);
+
+                const pointsElement = item.querySelector('.activity-points');
+                if (pointsElement) {
+                    pointsElement.textContent = `Pausa activa • +${currentPoints} pts`;
+                }
+
+                const actions = item.querySelector('.activity-actions');
+                if (actions && !actions.querySelector('.activity-rescue-btn')) {
+                    const rescueButton = document.createElement('button');
+                    rescueButton.className = 'activity-rescue-btn';
+                    rescueButton.setAttribute('onclick', 'rescuePausedTask(this, event)');
+                    rescueButton.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M13 6l6 6-6 6"></path></svg>Rescatar';
+                    actions.appendChild(rescueButton);
+                }
+            });
+        }
+
+        function pushCompletionActivity(taskName, gainedPoints, rescuedFrom, sharedPoints, completedTaskRecord) {
+            const activityLog = document.getElementById('activityLogContent');
+            if (!activityLog) return;
+
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.dataset.actor = currentUserName;
+            item.dataset.activityType = 'completion';
+            item.dataset.taskName = taskName;
+            item.dataset.gainedPoints = String(gainedPoints);
+            item.dataset.taskDate = completedTaskRecord?.date || new Date().toISOString();
+
+            const sharedText = rescuedFrom && sharedPoints > 0
+                ? ` • compartidos ${sharedPoints} pts con ${rescuedFrom}`
+                : '';
+
+            item.innerHTML = `
+                <div class="activity-avatar">A</div>
+                <div class="activity-details">
+                    <p class="activity-text"><strong>${currentUserName}</strong> completó <em>"${escapeHtml(taskName)}"</em></p>
+                    <span class="activity-time">justo ahora${sharedText}</span>
+                </div>
+                <div class="activity-actions">
+                    <span class="activity-points">+${gainedPoints} pts</span>
+                    <button class="activity-audit-btn" onclick="toggleAuditActivity(this, event)" aria-pressed="false">Auditar</button>
+                </div>
+            `;
+
+            activityLog.prepend(item);
+        }
+
+        function updateCurrentUserScores() {
+            const score = appState.users[currentUserName] || 0;
+            document.querySelectorAll('.current-user-score').forEach((element) => {
+                element.textContent = String(score);
+            });
+        }
+
+        function updateUserIdentityUI() {
+            const shortName = currentUserName;
+            const fullName = currentUserFullName || currentUserName;
+            const initial = currentUserName.charAt(0).toUpperCase() || 'U';
+
+            const profileName = document.getElementById('profileNameDisplay');
+            if (profileName) {
+                profileName.textContent = shortName;
+            }
+
+            const profileChip = document.querySelector('.profile-chip');
+            if (profileChip) {
+                profileChip.setAttribute('aria-label', `Abrir perfil de ${shortName}`);
+            }
+
+            const profileFullName = document.getElementById('profileFullName');
+            if (profileFullName) {
+                profileFullName.textContent = fullName;
+            }
+
+            const profileEmail = document.getElementById('profileEmail');
+            if (profileEmail) {
+                profileEmail.textContent = currentUserEmail;
+            }
+
+            document.querySelectorAll('.current-user-name').forEach((element) => {
+                element.textContent = `${shortName} (Tú)`;
+            });
+
+            document.querySelectorAll('.current-user-avatar').forEach((element) => {
+                element.textContent = initial;
+            });
+        }
+
+        function updateLeaderboardUserScore(userName, score) {
+            const entries = document.querySelectorAll('.ranking-item, .full-ranking-item');
+            entries.forEach((entry) => {
+                const nameElement = entry.querySelector('.rank-name');
+                if (!nameElement) return;
+
+                const currentName = nameElement.textContent.replace('(Tú)', '').trim();
+                if (currentName === userName) {
+                    const scoreElement = entry.querySelector('.score-num');
+                    if (scoreElement) scoreElement.textContent = String(score);
+                }
+            });
+        }
+
+        function updateHealth(nextHealth) {
+            appState.health = Math.max(0, Math.min(100, Math.round(nextHealth)));
+            updateHealthIndicator();
+        }
+
+        function updateHealthIndicator() {
+            const bar = document.querySelector('.health-bar');
+            const percentage = document.querySelector('.health-percentage');
+            if (!bar || !percentage) return;
+
+            bar.style.width = `${appState.health}%`;
+            bar.setAttribute('aria-valuenow', String(appState.health));
+            percentage.textContent = `${appState.health}%`;
+
+            bar.classList.remove('healthy', 'alert', 'critical');
+            if (appState.health >= 70) bar.classList.add('healthy');
+            else if (appState.health >= 40) bar.classList.add('alert');
+            else bar.classList.add('critical');
+        }
+
+        function formatDate(dateIso) {
+            const date = new Date(dateIso);
+            return new Intl.DateTimeFormat('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        }
+
+        function renderCompletedTasksHistory() {
+            const list = document.getElementById('completedTasksList');
+            const summary = document.getElementById('completedTasksSummary');
+            if (!list || !summary) return;
+
+            const completed = appState.completedTasks;
+            const totalCompleted = completed.length;
+            const totalPoints = completed.reduce((acc, item) => acc + item.gainedPoints, 0);
+
+            summary.innerHTML = `
+                <p><strong>${totalCompleted}</strong> tareas completadas</p>
+                <p><strong>${totalPoints}</strong> puntos ganados</p>
+            `;
+
+            if (completed.length === 0) {
+                list.innerHTML = '<p class="empty-history">Todavía no has completado tareas.</p>';
+                return;
+            }
+
+            list.innerHTML = completed.map((item) => {
+                const splitLine = item.sharedWith
+                    ? `<span class="history-shared">Compartiste ${item.sharedPoints} pts con ${item.sharedWith}</span>`
+                    : '';
+
+                return `
+                    <article class="history-item">
+                        <div>
+                            <h4>${escapeHtml(item.name)}</h4>
+                            <p>${formatDate(item.date)}</p>
+                            ${splitLine}
+                        </div>
+                        <div class="history-points">+${item.gainedPoints} pts</div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function getLast30DaysCounts() {
+            const today = new Date();
+            const labels = [];
+            const counts = [];
+            const byDate = {};
+
+            appState.completedTasks.forEach((task) => {
+                const d = new Date(task.date);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                byDate[key] = (byDate[key] || 0) + 1;
+            });
+
+            for (let i = 29; i >= 0; i -= 1) {
+                const date = new Date(today);
+                date.setHours(0, 0, 0, 0);
+                date.setDate(today.getDate() - i);
+
+                const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                labels.push(`${date.getDate()}/${date.getMonth() + 1}`);
+                counts.push(byDate[key] || 0);
+            }
+
+            return { labels, counts };
+        }
+
+        function renderProfileChart() {
+            const chart = document.getElementById('profileChartBars');
+            const scaleInfo = document.getElementById('profileChartScaleInfo');
+            if (!chart) return;
+
+            const { labels, counts } = getLast30DaysCounts();
+            const monthMax = Math.max(0, ...counts);
+            const dynamicMax = Math.max(1, monthMax);
+
+            if (scaleInfo) {
+                scaleInfo.textContent = `Escala dinamica: 0 a ${dynamicMax} tareas por día`;
+            }
+
+            chart.innerHTML = counts.map((value, index) => {
+                const height = value === 0 ? 4 : Math.max(10, Math.round((value / dynamicMax) * 100));
+                const showLabel = index % 5 === 0 || index === labels.length - 1;
+
+                return `
+                    <div class="chart-col" title="${labels[index]}: ${value} tarea(s)">
+                        <div class="chart-bar" style="height: ${height}%"></div>
+                        <span class="chart-val">${value}</span>
+                        <span class="chart-label">${showLabel ? labels[index] : ''}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            modal.style.display = 'none';
+
+            const anyOpen = Array.from(document.querySelectorAll('.modal')).some((m) => m.style.display === 'flex');
+            if (!anyOpen) {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function openLeaderboardModal() { openModal('leaderboardModal'); }
+        function closeLeaderboardModal() { closeModal('leaderboardModal'); }
+        function closeHistoryModal() { closeModal('completedTasksModal'); }
+        function closeProfileModal() { closeModal('profileModal'); }
+        function openActivityLogModal() { openModal('activityLogModal'); }
+        function closeActivityLogModal() { closeModal('activityLogModal'); }
+        function openPasswordResetModal() { openModal('passwordResetModal'); }
+        function closePasswordResetModal() { closeModal('passwordResetModal'); }
+        function openLoginModal() {
+            openLoginView();
+            openModal('loginModal');
+        }
+        function closeLoginModal() { closeModal('loginModal'); }
+
+        function clearAuthFeedback() {
+            const loginFeedback = document.getElementById('loginFeedback');
+            const registerFeedback = document.getElementById('registerFeedback');
+            if (loginFeedback) {
+                loginFeedback.textContent = '';
+                loginFeedback.classList.remove('error');
+            }
+            if (registerFeedback) {
+                registerFeedback.textContent = '';
+                registerFeedback.classList.remove('error');
+            }
+        }
+
+        function openRegisterView() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const title = document.getElementById('authModalTitle');
+            const subtitle = document.getElementById('authModalSubtitle');
+
+            if (loginForm) loginForm.style.display = 'none';
+            if (registerForm) registerForm.style.display = 'flex';
+            if (title) title.textContent = '📝 Registrarme';
+            if (subtitle) subtitle.textContent = 'Crea tu cuenta para usar TaskRide';
+            clearAuthFeedback();
+        }
+
+        function openLoginView(prefill = {}) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const title = document.getElementById('authModalTitle');
+            const subtitle = document.getElementById('authModalSubtitle');
+
+            if (loginForm) loginForm.style.display = 'flex';
+            if (registerForm) registerForm.style.display = 'none';
+            if (title) title.textContent = '🚪 Iniciar sesión';
+            if (subtitle) subtitle.textContent = 'Accede para personalizar tu usuario en el prototipo';
+            clearAuthFeedback();
+
+            if (prefill.name) {
+                const loginName = document.getElementById('loginName');
+                if (loginName) loginName.value = prefill.name;
+            }
+            if (prefill.email) {
+                const loginEmail = document.getElementById('loginEmail');
+                if (loginEmail) loginEmail.value = prefill.email;
+            }
+        }
+
+        function authenticateUser(userData) {
+            currentUserName = userData.name;
+            currentUserFullName = userData.fullName || userData.name;
+            currentUserEmail = userData.email;
+            currentUserOccupation = userData.occupation || 'otro';
+
+            if (!Object.prototype.hasOwnProperty.call(appState.users, currentUserName)) {
+                appState.users[currentUserName] = 0;
+            }
+
+            appState.session.isAuthenticated = true;
+            updateUserIdentityUI();
+            updateCurrentUserScores();
+            renderProfileChart();
+        }
+
+        function submitLogin(event) {
+            event.preventDefault();
+
+            const nameInput = document.getElementById('loginName');
+            const emailInput = document.getElementById('loginEmail');
+            const passwordInput = document.getElementById('loginPassword');
+            const feedback = document.getElementById('loginFeedback');
+            if (!nameInput || !emailInput || !passwordInput || !feedback) return;
+
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim().toLowerCase();
+            const password = passwordInput.value;
+
+            if (!name || !email || password.length < 6) {
+                feedback.textContent = 'Revisa los datos: nombre, correo válido y contraseña de al menos 6 caracteres.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            const account = appState.session.registeredAccounts[email];
+            if (!account) {
+                feedback.textContent = 'No existe una cuenta con ese correo. Pulsa "Registrarme".';
+                feedback.classList.add('error');
+                return;
+            }
+
+            if (account.password !== password) {
+                feedback.textContent = 'La contraseña no es correcta.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            if (account.name !== name) {
+                feedback.textContent = 'El nombre de usuario no coincide con esta cuenta.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            authenticateUser(account);
+
+            feedback.textContent = '';
+            feedback.classList.remove('error');
+            passwordInput.value = '';
+            closeLoginModal();
+        }
+
+        function submitRegistration(event) {
+            event.preventDefault();
+
+            const firstNameInput = document.getElementById('registerFirstName');
+            const lastNameInput = document.getElementById('registerLastName');
+            const emailInput = document.getElementById('registerEmail');
+            const occupationInput = document.getElementById('registerOccupation');
+            const passwordInput = document.getElementById('registerPassword');
+            const confirmInput = document.getElementById('registerPasswordConfirm');
+            const feedback = document.getElementById('registerFeedback');
+
+            if (!firstNameInput || !lastNameInput || !emailInput || !occupationInput || !passwordInput || !confirmInput || !feedback) {
+                return;
+            }
+
+            const firstName = firstNameInput.value.trim();
+            const lastName = lastNameInput.value.trim();
+            const email = emailInput.value.trim().toLowerCase();
+            const occupation = occupationInput.value;
+            const password = passwordInput.value;
+            const passwordConfirm = confirmInput.value;
+
+            if (!firstName || !lastName || !email || !occupation || password.length < 6) {
+                feedback.textContent = 'Completa todos los campos correctamente.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                feedback.textContent = 'Las contraseñas no coinciden.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            if (appState.session.registeredAccounts[email]) {
+                feedback.textContent = 'Ya existe una cuenta con ese correo.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            const newAccount = {
+                name: firstName,
+                fullName: `${firstName} ${lastName}`.trim(),
+                email,
+                occupation,
+                password
+            };
+
+            appState.session.registeredAccounts[email] = newAccount;
+            if (!Object.prototype.hasOwnProperty.call(appState.users, newAccount.name)) {
+                appState.users[newAccount.name] = 0;
+            }
+
+            feedback.textContent = 'Cuenta creada. Ahora puedes iniciar sesión.';
+            feedback.classList.remove('error');
+
+            openLoginView({ name: newAccount.name, email: newAccount.email });
+            const loginFeedback = document.getElementById('loginFeedback');
+            if (loginFeedback) {
+                loginFeedback.textContent = 'Registro completado. Introduce tu contraseña para entrar.';
+                loginFeedback.classList.remove('error');
+            }
+        }
+
+        function openHistoryModal(event) {
+            if (event) event.preventDefault();
+            renderCompletedTasksHistory();
+            openModal('completedTasksModal');
+        }
+
+        function openProfileModal() {
+            renderProfileChart();
+            openModal('profileModal');
+        }
+
+        function handleProfileKeyOpen(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openProfileModal();
+            }
+        }
+
+        function openSharePointsModal(taskCard) {
+            const taskName = taskCard.querySelector('.task-details h3')?.textContent?.trim() || 'Tarea';
+            const rescuedFrom = taskCard.dataset.rescuedFrom || 'compañero';
+            const totalPoints = getTaskAwardPoints(taskCard);
+
+            const subtitle = document.getElementById('sharePointsSubtitle');
+            const copy = document.getElementById('shareTaskCopy');
+            if (subtitle) subtitle.textContent = `${taskName} • ${totalPoints} pts totales`;
+            if (copy) copy.textContent = `Puedes compartir una parte de los puntos con ${rescuedFrom} por haber pausado la tarea.`;
+
+            updateSharePreview(totalPoints, rescuedFrom);
+            openModal('sharePointsModal');
+        }
+
+        function closeSharePointsModal() {
+            appState.pendingRescuedCompletion = null;
+            appState.selectedShare = 0;
+            closeModal('sharePointsModal');
+        }
+
+        function selectSharePercentage(percentage) {
+            appState.selectedShare = percentage;
+            const optionButtons = document.querySelectorAll('.share-option');
+            optionButtons.forEach((button) => {
+                button.classList.toggle('active', parseInt(button.dataset.share || '0', 10) === percentage);
+            });
+
+            const context = appState.pendingRescuedCompletion;
+            if (!context?.taskCard) return;
+
+            const totalPoints = getTaskAwardPoints(context.taskCard);
+            const rescuedFrom = context.taskCard.dataset.rescuedFrom || 'compañero';
+            updateSharePreview(totalPoints, rescuedFrom);
+        }
+
+        function updateSharePreview(totalPoints, rescuedFrom) {
+            const preview = document.getElementById('sharePreview');
+            if (!preview) return;
+
+            const shared = Math.round(totalPoints * (appState.selectedShare / 100));
+            const mine = totalPoints - shared;
+
+            preview.innerHTML = `
+                <p>Tú recibes: <strong>${mine} pts</strong></p>
+                <p>${rescuedFrom} recibe: <strong>${shared} pts</strong></p>
+            `;
+        }
+
+        function confirmRescuedTaskCompletion() {
+            const context = appState.pendingRescuedCompletion;
+            if (!context?.taskCard) return;
+
+            finalizeTaskCompletion(context.taskCard, appState.selectedShare);
+            closeModal('sharePointsModal');
+            appState.pendingRescuedCompletion = null;
+            appState.selectedShare = 0;
         }
 
         // MEJORA 3: Función para pausar/reanudar tareas difíciles
@@ -535,44 +1476,166 @@
             const timeElement = taskCard.querySelector('[id$="TaskTime"]') || taskCard.querySelector('.task-meta');
             const completeBtn = taskCard.querySelector('.btn-complete');
             const isTimeout = button.classList.toggle('active');
-            
+
+            if (!taskCard.dataset.defaultMeta) {
+                taskCard.dataset.defaultMeta = timeElement.textContent.trim();
+            }
+
             if (isTimeout) {
-                // Cambiar estado a pausado
                 taskCard.classList.add('paused-task');
                 completeBtn.disabled = true;
-                
-                // Cambiar el badge de tiempo
-                timeElement.textContent = 'EN PAUSA';
-                timeElement.classList.add('paused-badge');
-                
-                // Actualizar botón Pausa
-                button.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h-2.5M12 3v8m0 0l-7 7m7-7l7 7"></path></svg> <span>Reanudar</span>';
+                taskCard.dataset.isPaused = 'true';
+                taskCard.dataset.pausedAt = new Date().toISOString();
+
+                button.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6l10 6-10 6V6z"></path></svg> <span>Reanudar</span>';
                 button.title = 'Reanudar esta tarea';
-                
-                // Mostrar aviso elegante (tooltip flotante)
+
                 if (!taskCard.querySelector('.pause-indicator')) {
                     const indicator = document.createElement('div');
                     indicator.className = 'pause-indicator';
-                    indicator.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>Tarea pausada • Otro puede rescatarla</span>';
+                    indicator.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>Tarea pausada • Puntos en degradación diaria</span>';
                     taskCard.appendChild(indicator);
                 }
+
+                updateHealth(appState.health - 4);
             } else {
-                // Revertir a estado activo
                 taskCard.classList.remove('paused-task');
                 completeBtn.disabled = false;
-                
-                // Revertir badge
-                timeElement.textContent = 'Quedan 4 días';
-                timeElement.classList.remove('paused-badge');
-                
-                // Revertir botón
-                button.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> <span>Pausa</span>';
+                taskCard.dataset.isPaused = 'false';
+
+                if (taskCard.dataset.pausedAt) {
+                    taskCard.dataset.awardPoints = String(calculatePausedPoints(
+                        parseInt(taskCard.dataset.basePoints || '0', 10) || 0,
+                        taskCard.dataset.pausedAt
+                    ));
+                    delete taskCard.dataset.pausedAt;
+                }
+
+                button.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 3h12v4l-3 3 3 3v8H6v-8l3-3-3-3V3z"></path></svg> <span>Pausa</span>';
                 button.title = 'Pausar esta tarea - Otro compañero puede rescatarla';
-                
-                // Remover indicador
+
                 const indicator = taskCard.querySelector('.pause-indicator');
                 if (indicator) indicator.remove();
+
+                timeElement.textContent = taskCard.dataset.defaultMeta || 'Pendiente';
+                timeElement.classList.remove('paused-badge');
+                updateHealth(appState.health + 2);
             }
+
+            refreshPausedTaskCards();
+        }
+
+        // Rescata una tarea pausada del feed y la agrega como pendiente para el usuario actual.
+        function rescuePausedTask(button, event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const activityItem = button.closest('.activity-item');
+            if (!activityItem || activityItem.dataset.rescued === 'true') return;
+
+            const taskName = activityItem.dataset.taskName
+                || activityItem.querySelector('.activity-text em')?.textContent.replace(/"/g, '').trim()
+                || 'Tarea rescatada';
+
+            const pausedBy = activityItem.dataset.pausedBy || 'compañero';
+            const pausedAt = activityItem.dataset.pausedAt || new Date().toISOString();
+            const basePoints = parseInt(activityItem.dataset.basePoints || '30', 10) || 30;
+            const rescuedPoints = calculatePausedPoints(basePoints, pausedAt);
+
+            const tasksList = document.querySelector('.tasks-list');
+            if (!tasksList) return;
+
+            const rescuedCard = document.createElement('article');
+            rescuedCard.className = 'task-card urgent rescued-task';
+            rescuedCard.dataset.taskId = `rescued-${Date.now()}`;
+            rescuedCard.dataset.basePoints = String(basePoints);
+            rescuedCard.dataset.urgency = 'urgent';
+            rescuedCard.dataset.rescued = 'true';
+            rescuedCard.dataset.rescuedFrom = pausedBy;
+            rescuedCard.dataset.awardPoints = String(rescuedPoints);
+
+            rescuedCard.innerHTML = `
+                <div class="task-info">
+                    <div class="task-icon">🆘</div>
+                    <div class="task-details">
+                        <h3>${escapeHtml(taskName)} (Rescatada)</h3>
+                        <p class="task-meta">Rescatada de ${escapeHtml(pausedBy)} • Te toca completarla</p>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <div class="points-reward">
+                        <span class="pts-icon">⭐</span>
+                        <div>
+                            <span class="pts-number">+${rescuedPoints}</span>
+                            <span class="pts-label">Puntos rescate</span>
+                        </div>
+                    </div>
+                    <button class="btn-complete" aria-label="Marcar como completada">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                        Completar
+                    </button>
+                </div>
+            `;
+
+            tasksList.prepend(rescuedCard);
+
+            const actionsContainer = activityItem.querySelector('.activity-actions');
+            if (actionsContainer) {
+                actionsContainer.innerHTML = '<span class="activity-points">Rescatada por ti</span>';
+            }
+
+            const activityDetails = activityItem.querySelector('.activity-details');
+            if (activityDetails && !activityDetails.querySelector('.audit-note')) {
+                const rescueNote = document.createElement('span');
+                rescueNote.className = 'audit-note';
+                rescueNote.textContent = 'Tarea movida a tus pendientes';
+                activityDetails.appendChild(rescueNote);
+            }
+
+            activityItem.dataset.rescued = 'true';
+            activityItem.classList.add('rescued');
+            updatePendingCounter();
+        }
+
+        function submitPasswordChange(event) {
+            event.preventDefault();
+
+            const oldPassword = document.getElementById('oldPassword');
+            const newPassword = document.getElementById('newPassword');
+            const newPasswordConfirm = document.getElementById('newPasswordConfirm');
+            const feedback = document.getElementById('passwordFormFeedback');
+
+            if (!oldPassword || !newPassword || !newPasswordConfirm || !feedback) return;
+
+            if (newPassword.value !== newPasswordConfirm.value) {
+                feedback.textContent = 'Las contraseñas nuevas no coinciden.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            feedback.textContent = 'Contraseña actualizada correctamente.';
+            feedback.classList.remove('error');
+            oldPassword.value = '';
+            newPassword.value = '';
+            newPasswordConfirm.value = '';
+
+            setTimeout(() => {
+                closePasswordResetModal();
+                feedback.textContent = '';
+            }, 1000);
+        }
+
+        function sendForgotPasswordEmail() {
+            const feedback = document.getElementById('passwordFormFeedback');
+            if (!feedback) return;
+
+            feedback.textContent = 'Te hemos enviado un correo para restablecer la contraseña.';
+            feedback.classList.remove('error');
+        }
+
+        function showLogoutFeedback() {
+            appState.session.isAuthenticated = false;
+            openLoginModal();
         }
 
         // MEJORA 4: Auditoria comunitaria para revocar puntos por tareas incompletas o fraudulentas
@@ -583,6 +1646,8 @@
             const activityItem = button.closest('.activity-item');
             const activityDetails = activityItem.querySelector('.activity-details');
             const pointsElement = activityItem.querySelector('.activity-points');
+            const actorName = activityItem.dataset.actor || activityItem.querySelector('.activity-text strong')?.textContent?.trim();
+            const isOwnTask = actorName === currentUserName;
 
             if (!activityItem.dataset.originalPoints) {
                 activityItem.dataset.originalPoints = pointsElement.textContent.trim();
@@ -592,7 +1657,13 @@
             let auditNote = activityDetails.querySelector('.audit-note');
 
             if (isAudited) {
-                pointsElement.textContent = 'Puntos revocados';
+                if (isOwnTask) {
+                    applyOwnTaskAuditPenalty(activityItem);
+                    pointsElement.textContent = 'Auditada: devuelta a pendientes';
+                } else {
+                    pointsElement.textContent = 'Puntos revocados';
+                }
+
                 button.textContent = 'Restaurar';
                 button.setAttribute('aria-pressed', 'true');
                 button.classList.add('active');
@@ -600,10 +1671,16 @@
                 if (!auditNote) {
                     auditNote = document.createElement('span');
                     auditNote.className = 'audit-note';
-                    auditNote.textContent = 'Validacion comunitaria: actividad marcada como incompleta';
+                    auditNote.textContent = isOwnTask
+                        ? 'Tu tarea vuelve a pendientes con penalización del 25%.'
+                        : 'Validacion comunitaria: actividad marcada como incompleta';
                     activityDetails.appendChild(auditNote);
                 }
             } else {
+                if (isOwnTask) {
+                    restoreOwnTaskAudit(activityItem);
+                }
+
                 pointsElement.textContent = activityItem.dataset.originalPoints;
                 button.textContent = 'Auditar';
                 button.setAttribute('aria-pressed', 'false');
@@ -614,6 +1691,134 @@
                 }
             }
         }
+
+        function applyOwnTaskAuditPenalty(activityItem) {
+            const taskName = activityItem.dataset.taskName
+                || activityItem.querySelector('.activity-text em')?.textContent.replace(/"/g, '').trim()
+                || 'Tarea auditada';
+
+            const matchIndex = appState.completedTasks.findIndex((task) => task.name === taskName);
+            if (matchIndex < 0) return;
+
+            const completedRecord = appState.completedTasks[matchIndex];
+            appState.completedTasks.splice(matchIndex, 1);
+
+            const pointsToRemove = completedRecord.gainedPoints;
+            appState.users[currentUserName] = Math.max(0, appState.users[currentUserName] - pointsToRemove);
+            updateCurrentUserScores();
+
+            const healthPenalty = 6;
+            updateHealth(appState.health - healthPenalty);
+
+            const penalizedPoints = Math.max(1, Math.round(completedRecord.totalPoints * 0.75));
+            const recreatedTask = createPenalizedTask(taskName, penalizedPoints, completedRecord.totalPoints);
+            const tasksList = document.querySelector('.tasks-list');
+            tasksList.prepend(recreatedTask);
+            updatePendingCounter();
+            renderCompletedTasksHistory();
+            renderProfileChart();
+
+            const contextId = String(appState.nextAuditId++);
+            appState.auditContexts[contextId] = {
+                completedRecord,
+                pointsToRemove,
+                healthPenalty,
+                recreatedTaskId: recreatedTask.dataset.taskId
+            };
+            activityItem.dataset.auditContextId = contextId;
+        }
+
+        function restoreOwnTaskAudit(activityItem) {
+            const contextId = activityItem.dataset.auditContextId;
+            if (!contextId || !appState.auditContexts[contextId]) return;
+
+            const context = appState.auditContexts[contextId];
+            const recreatedCard = document.querySelector(`.task-card[data-task-id="${context.recreatedTaskId}"]`);
+            if (recreatedCard) {
+                recreatedCard.remove();
+            }
+
+            appState.completedTasks.unshift(context.completedRecord);
+            appState.users[currentUserName] += context.pointsToRemove;
+            updateHealth(appState.health + context.healthPenalty);
+            updateCurrentUserScores();
+            updatePendingCounter();
+            renderCompletedTasksHistory();
+            renderProfileChart();
+
+            delete appState.auditContexts[contextId];
+            delete activityItem.dataset.auditContextId;
+        }
+
+        function createPenalizedTask(taskName, penalizedPoints, basePoints) {
+            const recreatedCard = document.createElement('article');
+            recreatedCard.className = 'task-card medium';
+            recreatedCard.dataset.taskId = `audit-${Date.now()}`;
+            recreatedCard.dataset.basePoints = String(basePoints);
+            recreatedCard.dataset.awardPoints = String(penalizedPoints);
+            recreatedCard.dataset.urgency = 'medium';
+
+            recreatedCard.innerHTML = `
+                <div class="task-info">
+                    <div class="task-icon">🔁</div>
+                    <div class="task-details">
+                        <h3>${escapeHtml(taskName)} (Reauditada)</h3>
+                        <p class="task-meta">Repetir tarea • penalización del 25%</p>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <div class="points-reward">
+                        <span class="pts-icon">⭐</span>
+                        <div>
+                            <span class="pts-number">+${penalizedPoints}</span>
+                            <span class="pts-label">Puntos ajustados</span>
+                        </div>
+                    </div>
+                    <button class="btn-complete" aria-label="Marcar como completada">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                        Completar
+                    </button>
+                </div>
+            `;
+
+            return recreatedCard;
+        }
+
+        function escapeHtml(value) {
+            return value
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        window.addEventListener('click', (event) => {
+            if (event.target.classList.contains('modal')) {
+                if (event.target.id === 'loginModal' && !appState.session.isAuthenticated) {
+                    return;
+                }
+                event.target.style.display = 'none';
+                const anyOpen = Array.from(document.querySelectorAll('.modal')).some((m) => m.style.display === 'flex');
+                if (!anyOpen) document.body.style.overflow = 'auto';
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                if (!appState.session.isAuthenticated) {
+                    const loginModal = document.getElementById('loginModal');
+                    if (loginModal && loginModal.style.display === 'flex') {
+                        return;
+                    }
+                }
+                document.querySelectorAll('.modal').forEach((modal) => {
+                    if (modal.id === 'loginModal' && !appState.session.isAuthenticated) return;
+                    modal.style.display = 'none';
+                });
+                document.body.style.overflow = 'auto';
+            }
+        });
     </script>
 
 </body>
