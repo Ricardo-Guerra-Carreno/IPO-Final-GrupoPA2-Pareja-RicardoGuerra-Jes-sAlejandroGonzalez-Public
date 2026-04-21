@@ -182,6 +182,7 @@
                         <div>
                             <h2>🏆 Clasificación del Piso</h2>
                             <p class="leaderboard-hint">Los puntos se actualizan en tiempo real</p>
+                            <p id="leaderboardResetCountdown" class="leaderboard-reset-countdown" aria-live="polite">Reinicio en --</p>
                         </div>
                         <span class="month-tag">Este Mes</span>
                     </div>
@@ -699,6 +700,8 @@
     <!-- Script funcional de la aplicación -->
     <script>
         const DAY_MS = 24 * 60 * 60 * 1000;
+        const MONTH_NAMES_ES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+        const SESSION_STORAGE_KEY = 'taskride.session.v1';
         let currentUserName = 'Álex';
         let currentUserFullName = 'Álex Fernández Ruiz';
         let currentUserEmail = 'alex.fernandez@example.com';
@@ -713,19 +716,20 @@
 
         const appState = {
             users: {
-                'Álex': 280,
-                'Marta': 420,
-                'Carlos': 150,
-                'Laura': 125,
-                'David': 95,
-                'Ana': 70,
-                'Miguel': 45
+                'Álex': 100,
+                'Marta': 140,
+                'Carlos': 75,
+                'Laura': 75,
+                'David': 71,
+                'Ana': 67,
+                'Miguel': 63
             },
             health: 85,
             selectedShare: 0,
             pendingRescuedCompletion: null,
             nextAuditId: 1,
             auditContexts: {},
+            leaderboardCycleKey: getLeaderboardMonthKey(),
             session: {
                 isAuthenticated: false,
                 registeredAccounts: {
@@ -770,23 +774,234 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
+            restoreSessionFromStorage();
+            syncUserScoreWithHistory();
             initializeTaskCards();
             bindTaskCompletion();
             refreshPausedTaskCards();
             refreshPausedActivities();
             updateUserIdentityUI();
             updatePendingCounter();
+            updateMonthlyTag();
+            resetMonthlyLeaderboardIfNeeded();
+            updateLeaderboardResetCountdown();
+            renderLeaderboardScores();
             updateCurrentUserScores();
             updateHealthIndicator();
             renderCompletedTasksHistory();
             renderProfileChart();
-            openLoginModal();
+
+            if (!appState.session.isAuthenticated) {
+                openLoginModal();
+            }
 
             setInterval(() => {
+                resetMonthlyLeaderboardIfNeeded();
+                updateLeaderboardResetCountdown();
                 refreshPausedTaskCards();
                 refreshPausedActivities();
             }, 60000);
         });
+
+        function persistSessionToStorage() {
+            try {
+                const payload = {
+                    currentUserName,
+                    currentUserFullName,
+                    currentUserEmail,
+                    currentUserOccupation,
+                    isAuthenticated: appState.session.isAuthenticated,
+                    registeredAccounts: appState.session.registeredAccounts
+                };
+                localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(payload));
+            } catch (error) {
+                // Si localStorage no está disponible, el prototipo sigue funcionando sin persistencia.
+            }
+        }
+
+        function clearSessionFromStorage() {
+            try {
+                localStorage.removeItem(SESSION_STORAGE_KEY);
+            } catch (error) {
+                // Ignorado: no afecta al flujo principal del prototipo.
+            }
+        }
+
+        function restoreSessionFromStorage() {
+            try {
+                const raw = localStorage.getItem(SESSION_STORAGE_KEY);
+                if (!raw) return;
+
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== 'object') return;
+
+                if (parsed.registeredAccounts && typeof parsed.registeredAccounts === 'object') {
+                    appState.session.registeredAccounts = parsed.registeredAccounts;
+                }
+
+                appState.session.isAuthenticated = Boolean(parsed.isAuthenticated);
+
+                if (appState.session.isAuthenticated) {
+                    currentUserName = parsed.currentUserName || currentUserName;
+                    currentUserFullName = parsed.currentUserFullName || currentUserName;
+                    currentUserEmail = parsed.currentUserEmail || currentUserEmail;
+                    currentUserOccupation = parsed.currentUserOccupation || currentUserOccupation;
+
+                    if (!Object.prototype.hasOwnProperty.call(appState.users, currentUserName)) {
+                        appState.users[currentUserName] = 0;
+                    }
+                }
+            } catch (error) {
+                clearSessionFromStorage();
+            }
+        }
+
+        function getLeaderboardMonthKey(date = new Date()) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        function normalizeRankingName(name = '') {
+            return name.replace(/\((Top|Tú)\)/g, '').trim();
+        }
+
+        function renderLeaderboardScores() {
+            const compactList = document.querySelector('.leaderboard-body');
+            const fullList = document.querySelector('.full-ranking-list');
+            if (!compactList || !fullList) return;
+
+            const ranking = Object.entries(appState.users)
+                .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'es', { sensitivity: 'base' }));
+
+            compactList.innerHTML = ranking.slice(0, 3).map(([name, score], index) => {
+                const isCurrentUser = name === currentUserName;
+                const meta = getLeaderboardUserMeta(name, index, isCurrentUser);
+                const rankItemClass = `ranking-item${index === 0 ? ' top-1' : ''}${isCurrentUser ? ' current-user' : ''}`;
+                const scoreClass = `score-num${isCurrentUser ? ' current-user-score' : ''}`;
+                const nameClass = `rank-name${isCurrentUser ? ' current-user-name' : ''}`;
+                const avatarClass = `rank-avatar${isCurrentUser ? ' current-user-avatar' : ''}`;
+
+                return `
+                    <div class="${rankItemClass}">
+                        <div class="rank-user-info">
+                            <div class="${avatarClass}">${escapeHtml(meta.avatar)}</div>
+                            <div>
+                                <p class="${nameClass}">${escapeHtml(meta.displayName)}</p>
+                                <p class="rank-subtitle">${escapeHtml(meta.subtitle)}</p>
+                            </div>
+                        </div>
+                        <div class="rank-score">
+                            <span class="${scoreClass}">${score}</span>
+                            <span class="score-pts">pts</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            fullList.innerHTML = ranking.map(([name, score], index) => {
+                const isCurrentUser = name === currentUserName;
+                const meta = getLeaderboardUserMeta(name, index, isCurrentUser);
+                const positionClass = index === 0
+                    ? ' position-1'
+                    : index === 1
+                        ? ' position-2'
+                        : index === 2
+                            ? ' position-3'
+                            : '';
+
+                const rowClass = `full-ranking-item${positionClass}${isCurrentUser ? ' current-user-full' : ''}`;
+                const scoreClass = `score-num${isCurrentUser ? ' current-user-score' : ''}`;
+                const nameClass = `rank-name${isCurrentUser ? ' current-user-name' : ''}`;
+                const avatarClass = `rank-avatar${isCurrentUser ? ' current-user-avatar' : ''}`;
+
+                return `
+                    <div class="${rowClass}">
+                        <div class="position-badge">${index + 1}º</div>
+                        <div class="rank-user-info">
+                            <div class="${avatarClass}">${escapeHtml(meta.avatar)}</div>
+                            <div>
+                                <p class="${nameClass}">${escapeHtml(meta.displayName)}</p>
+                                <p class="rank-subtitle">${escapeHtml(meta.subtitle)}</p>
+                            </div>
+                        </div>
+                        <div class="rank-score">
+                            <span class="${scoreClass}">${score}</span>
+                            <span class="score-pts">pts</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getLeaderboardUserMeta(name, rankIndex, isCurrentUser) {
+            const knownUsers = {
+                'Marta': { avatar: '👩🏻', subtitle: 'Imparable 🔥' },
+                'Carlos': { avatar: '👨🏽', subtitle: 'Necesita un empujón' },
+                'Laura': { avatar: '👩🏼', subtitle: 'En progreso' },
+                'David': { avatar: '👨🏻', subtitle: 'Puede mejorar' },
+                'Ana': { avatar: '👩🏽', subtitle: '¡Ánimo!' },
+                'Miguel': { avatar: '👨🏾', subtitle: 'Recién llegado' }
+            };
+
+            if (isCurrentUser) {
+                return {
+                    avatar: currentUserName.charAt(0).toUpperCase() || 'U',
+                    displayName: `${name} (Tú)`,
+                    subtitle: rankIndex === 0 ? 'Vas liderando 🚀' : '¡A por el líder!'
+                };
+            }
+
+            const fallback = knownUsers[name] || { avatar: '👤', subtitle: 'En progreso' };
+            return {
+                avatar: fallback.avatar,
+                displayName: rankIndex === 0 ? `${name} (Top)` : name,
+                subtitle: fallback.subtitle
+            };
+        }
+
+        function updateMonthlyTag() {
+            const monthTag = document.querySelector('.month-tag');
+            if (!monthTag) return;
+
+            const now = new Date();
+            monthTag.textContent = MONTH_NAMES_ES[now.getMonth()];
+        }
+
+        function getTimeToNextMonth() {
+            const now = new Date();
+            const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0, 0);
+            const diffMs = Math.max(0, nextMonth.getTime() - now.getTime());
+
+            const totalMinutes = Math.floor(diffMs / (1000 * 60));
+            const days = Math.floor(totalMinutes / (60 * 24));
+            const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+            const minutes = totalMinutes % 60;
+
+            return { days, hours, minutes };
+        }
+
+        function updateLeaderboardResetCountdown() {
+            const countdownElement = document.getElementById('leaderboardResetCountdown');
+            if (!countdownElement) return;
+
+            const { days, hours, minutes } = getTimeToNextMonth();
+            countdownElement.textContent = `Reinicio en ${days}d ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m`;
+        }
+
+        function resetMonthlyLeaderboardIfNeeded() {
+            const currentCycleKey = getLeaderboardMonthKey();
+            if (appState.leaderboardCycleKey === currentCycleKey) return;
+
+            appState.leaderboardCycleKey = currentCycleKey;
+            Object.keys(appState.users).forEach((userName) => {
+                appState.users[userName] = 0;
+            });
+
+            syncUserScoreWithHistory();
+
+            updateMonthlyTag();
+            renderLeaderboardScores();
+            updateCurrentUserScores();
+        }
 
         function initializeTaskCards() {
             const cards = document.querySelectorAll('.tasks-list .task-card');
@@ -1013,10 +1228,7 @@
         }
 
         function updateCurrentUserScores() {
-            const score = appState.users[currentUserName] || 0;
-            document.querySelectorAll('.current-user-score').forEach((element) => {
-                element.textContent = String(score);
-            });
+            renderLeaderboardScores();
         }
 
         function updateUserIdentityUI() {
@@ -1054,17 +1266,8 @@
         }
 
         function updateLeaderboardUserScore(userName, score) {
-            const entries = document.querySelectorAll('.ranking-item, .full-ranking-item');
-            entries.forEach((entry) => {
-                const nameElement = entry.querySelector('.rank-name');
-                if (!nameElement) return;
-
-                const currentName = nameElement.textContent.replace('(Tú)', '').trim();
-                if (currentName === userName) {
-                    const scoreElement = entry.querySelector('.score-num');
-                    if (scoreElement) scoreElement.textContent = String(score);
-                }
-            });
+            appState.users[userName] = score;
+            renderLeaderboardScores();
         }
 
         function updateHealth(nextHealth) {
@@ -1205,6 +1408,13 @@
             }
         }
 
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach((modal) => {
+                modal.style.display = 'none';
+            });
+            document.body.style.overflow = 'auto';
+        }
+
         function openLeaderboardModal() { openModal('leaderboardModal'); }
         function closeLeaderboardModal() { closeModal('leaderboardModal'); }
         function closeHistoryModal() { closeModal('completedTasksModal'); }
@@ -1277,10 +1487,22 @@
                 appState.users[currentUserName] = 0;
             }
 
+            syncUserScoreWithHistory();
+
             appState.session.isAuthenticated = true;
+            persistSessionToStorage();
             updateUserIdentityUI();
             updateCurrentUserScores();
             renderProfileChart();
+        }
+
+        function syncUserScoreWithHistory() {
+            const historyPoints = appState.completedTasks.reduce((total, task) => total + (task.gainedPoints || 0), 0);
+            const currentScore = appState.users[currentUserName] || 0;
+
+            // En el prototipo, el historial visible representa al usuario activo.
+            // Aseguramos que no vea menos puntos que los ya ganados en ese historial.
+            appState.users[currentUserName] = Math.max(currentScore, historyPoints);
         }
 
         function submitLogin(event) {
@@ -1302,31 +1524,32 @@
                 return;
             }
 
-            const account = appState.session.registeredAccounts[email];
-            if (!account) {
-                feedback.textContent = 'No existe una cuenta con ese correo. Pulsa "Registrarme".';
-                feedback.classList.add('error');
-                return;
+            const existingAccount = appState.session.registeredAccounts[email];
+            const accountForSession = existingAccount
+                ? {
+                    ...existingAccount,
+                    name,
+                    fullName: existingAccount.fullName || name
+                }
+                : {
+                    name,
+                    fullName: name,
+                    email,
+                    occupation: 'otro',
+                    password
+                };
+
+            // En modo demo no bloqueamos el acceso: si no existe cuenta, se crea una temporal automáticamente.
+            if (!existingAccount) {
+                appState.session.registeredAccounts[email] = accountForSession;
             }
 
-            if (account.password !== password) {
-                feedback.textContent = 'La contraseña no es correcta.';
-                feedback.classList.add('error');
-                return;
-            }
-
-            if (account.name !== name) {
-                feedback.textContent = 'El nombre de usuario no coincide con esta cuenta.';
-                feedback.classList.add('error');
-                return;
-            }
-
-            authenticateUser(account);
+            authenticateUser(accountForSession);
 
             feedback.textContent = '';
             feedback.classList.remove('error');
             passwordInput.value = '';
-            closeLoginModal();
+            closeAllModals();
         }
 
         function submitRegistration(event) {
@@ -1381,6 +1604,8 @@
             if (!Object.prototype.hasOwnProperty.call(appState.users, newAccount.name)) {
                 appState.users[newAccount.name] = 0;
             }
+
+            persistSessionToStorage();
 
             feedback.textContent = 'Cuenta creada. Ahora puedes iniciar sesión.';
             feedback.classList.remove('error');
@@ -1635,6 +1860,7 @@
 
         function showLogoutFeedback() {
             appState.session.isAuthenticated = false;
+            clearSessionFromStorage();
             openLoginModal();
         }
 
