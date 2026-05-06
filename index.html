@@ -28,6 +28,8 @@
             
             <!-- Perfil de usuario y estado actual (puntos) para motivación constante -->
             <div class="profile-section">
+                <!-- Theme toggle -->
+                <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema">🌙</button>
                 <!-- MEJORA 1: Indicador de Salud del Piso (Health Score) -->
                 <div class="health-indicator">
                     <div class="health-label">
@@ -66,19 +68,25 @@
             -->
             <section class="tasks-section">
                 
-                <!-- Encabezado de la sección: Proporciona carga cognitiva baja resumiendo lo que hay que hacer -->
+                <!-- Encabezado de la sección con pestañas -->
                 <header class="section-header">
                     <div>
-                        <h1>Mis Tareas Pendientes</h1>
-                        <p class="section-subtitle">📋 Tienes <strong>3 tareas</strong> asignadas para esta semana. ¡Completa tareas para ganar puntos!</p>
+                        <h1 id="tabTitle">Mis Tareas Pendientes</h1>
+                        <p class="section-subtitle" id="tabSubtitle">📋 Tienes <strong>3 tareas</strong> asignadas para esta semana. ¡Completa tareas para ganar puntos!</p>
                     </div>
-                    <a href="#" class="history-link" onclick="openHistoryModal(event)">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Ver completadas
-                    </a>
                 </header>
 
-                <div class="tasks-list">
+                <!-- Botones de navegación de pestañas -->
+                <div class="tabs-navigation">
+                    <button class="tab-btn active" data-tab="my-tasks" onclick="switchTab('my-tasks')">Mis Tareas</button>
+                    <button class="tab-btn" data-tab="paused-tasks" onclick="switchTab('paused-tasks')">Tareas Pausadas</button>
+                    <button class="tab-btn" data-tab="floor-history" onclick="switchTab('floor-history')">Historial del Piso</button>
+                    <button class="tab-btn" data-tab="my-completed" onclick="switchTab('my-completed')">Mis Completadas</button>
+                </div>
+
+                <!-- Pestaña 1: Mis Tareas -->
+                <div class="tab-content active" data-tab="my-tasks">
+                    <div class="tasks-list">
                     
                     <!-- 
                       TAREA 1: Prioridad Urgente
@@ -167,7 +175,45 @@
                         </div>
                     </article>
 
+                    </div>
                 </div>
+
+                <!-- Pestaña 2: Tareas Pausadas y Rescates -->
+                <div class="tab-content" data-tab="paused-tasks">
+                    <div class="tasks-list" id="paused-tasks-list">
+                        <!-- Placeholder para tareas pausadas -->
+                        <div class="empty-state">
+                            <p>📭 No hay tareas pausadas en este momento</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña 3: Historial del Piso -->
+                <div class="tab-content" data-tab="floor-history">
+                    <div class="history-filters">
+                        <select id="historyUserFilter">
+                            <option value="">-- Filtrar por usuario --</option>
+                        </select>
+                        <button class="btn-filter" onclick="applyHistoryFilters()">Filtrar</button>
+                    </div>
+                    <div class="activity-list" id="floor-history-list">
+                        <!-- Placeholder para historial -->
+                        <div class="empty-state">
+                            <p>📋 El historial del piso aparecerá aquí</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña 4: Mis Completadas -->
+                <div class="tab-content" data-tab="my-completed">
+                    <div class="tasks-list" id="completed-tasks-list">
+                        <!-- Placeholder para completadas -->
+                        <div class="empty-state">
+                            <p>✅ Aún no has completado tareas</p>
+                        </div>
+                    </div>
+                </div>
+
             </section>
 
             <!-- 
@@ -724,6 +770,7 @@
                 'Ana': 67,
                 'Miguel': 63
             },
+                pausedTasks: [],
             health: 85,
             selectedShare: 0,
             pendingRescuedCompletion: null,
@@ -773,7 +820,336 @@
             ]
         };
 
+        // ============== GESTIÓN DE PESTAÑAS ==============
+        function switchTab(tabName) {
+            // Ocultar todos los tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Desactivar todos los botones
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Mostrar el tab seleccionado
+            const activeTab = document.querySelector(`.tab-content[data-tab="${tabName}"]`);
+            if (activeTab) activeTab.classList.add('active');
+            
+            // Activar el botón
+            const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            // Actualizar títulos
+            const titles = {
+                'my-tasks': { title: 'Mis Tareas Pendientes', subtitle: '📋 Tienes <strong>3 tareas</strong> asignadas para esta semana. ¡Completa tareas para ganar puntos!' },
+                'paused-tasks': { title: 'Tareas Pausadas y Rescates', subtitle: '⏸️ Estas tareas están pausadas. Puedes despaursarlas o rescatar las de otros compañeros.' },
+                'floor-history': { title: 'Historial del Piso', subtitle: '📅 Actividad de todos los compañeros en el piso.' },
+                'my-completed': { title: 'Mis Tareas Completadas', subtitle: '✅ Todas las tareas que has completado con éxito.' }
+            };
+            
+            if (titles[tabName]) {
+                document.getElementById('tabTitle').textContent = titles[tabName].title;
+                document.getElementById('tabSubtitle').innerHTML = titles[tabName].subtitle;
+            }
+
+            // Cargar contenido según la pestaña
+            if (tabName === 'paused-tasks') renderPausedTasks();
+            if (tabName === 'floor-history') renderFloorHistory();
+            if (tabName === 'my-completed') renderMyCompletedTasks();
+        }
+
+        // Renderizar tareas pausadas
+        function renderPausedTasks() {
+            const container = document.getElementById('paused-tasks-list');
+            container.innerHTML = '';
+
+            // Move any paused DOM task-cards into the paused list
+            const pausedCards = Array.from(document.querySelectorAll('.task-card[data-isPaused="true"]'));
+            pausedCards.forEach(card => {
+                card.classList.add('paused-task-view');
+                // ensure controls exist
+                ensurePausedControls(card);
+                container.appendChild(card);
+            });
+
+            // Also include pausedTasks stored in state (simulated other users)
+            if (appState.pausedTasks && appState.pausedTasks.length) {
+                appState.pausedTasks.forEach(pt => {
+                    const el = document.createElement('article');
+                    el.className = 'task-card paused-task-view';
+                    el.dataset.isPaused = 'true';
+                    el.dataset.owner = pt.owner;
+                    el.innerHTML = `
+                        <div class="task-info">
+                            <div class="task-icon">${pt.icon || '⏸️'}</div>
+                            <div class="task-details">
+                                <h3>${pt.name}</h3>
+                                <p class="task-meta">Pausada por ${pt.owner}</p>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <div class="points-reward">
+                                <span class="pts-icon">⭐</span>
+                                <div>
+                                    <span class="pts-number">+${pt.points}</span>
+                                    <span class="pts-label">Puntos</span>
+                                </div>
+                            </div>
+                            <div class="task-buttons">
+                                <button class="btn-rescue" onclick="rescuePausedCard(this, event)">Rescatar</button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(el);
+                });
+            }
+
+            if (container.children.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>📭 No hay tareas pausadas en este momento</p></div>';
+            }
+        }
+
+        // Renderizar historial del piso (otras actividades)
+        function renderFloorHistory() {
+            const container = document.getElementById('floor-history-list');
+            const currentUser = appState.session.registeredAccounts && Object.values(appState.session.registeredAccounts)[0] ? 
+                               Object.values(appState.session.registeredAccounts)[0].name : 'Álex';
+            
+            container.innerHTML = '';
+
+            // Simulate other users' activities
+            const otherUserActivities = [
+                { user: 'Marta', action: 'completó', task: 'Bajar basura', points: 10, time: 'hace 2 horas', emoji: '👩🏻' },
+                { user: 'Carlos', action: 'completó', task: 'Lavar platos', points: 25, time: 'hace 4 horas', emoji: '👨🏽' },
+                { user: 'Laura', action: 'pausó', task: 'Limpieza baño', points: 50, time: 'hace 1 día', emoji: '👩🏻‍🦱' },
+                { user: 'David', action: 'completó', task: 'Aspirar salón', points: 30, time: 'hace 1 día', emoji: '👨🏻' },
+                { user: 'Ana', action: 'completó', task: 'Regar plantas', points: 12, time: 'hace 2 días', emoji: '👩🏽' }
+            ];
+
+            if (otherUserActivities.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>📋 El historial del piso aparecerá aquí</p></div>';
+                return;
+            }
+
+            // Apply filters from UI
+            const userFilter = document.getElementById('historyUserFilter') ? document.getElementById('historyUserFilter').value : '';
+
+            // Build a fuller activity list combining simulated activities and paused/completed state
+            let allActivities = otherUserActivities.slice();
+            // include paused tasks from state
+            if (appState.pausedTasks && appState.pausedTasks.length) {
+                appState.pausedTasks.forEach(p => {
+                    allActivities.push({ user: p.owner, action: 'pausó', task: p.name, points: p.points || 10, time: 'hace varios días', emoji: '⏸️' });
+                });
+            }
+            // include completed tasks from state (mark as completó)
+            if (appState.completedTasks && appState.completedTasks.length) {
+                appState.completedTasks.forEach(c => {
+                    // attempt to detect actor; default to current user
+                    const actor = c.sharedWith || currentUser;
+                    allActivities.push({ user: actor, action: 'completó', task: c.name, points: c.gainedPoints || c.totalPoints || 10, time: formatDate(c.date), emoji: '✅' });
+                });
+            }
+
+            let filtered = allActivities.slice();
+            if (userFilter) filtered = filtered.filter(a => a.user === userFilter);
+
+            // Limit to 4 items for preview
+            const limited = filtered.slice(0,4);
+            limited.forEach(activity => {
+                const auditBtn = `<button class="btn-audit" onclick="auditActivity(this)">Tarea No Realizada</button>`;
+                const itemHTML = `
+                    <div class="activity-item history-floor-item" data-user="${activity.user}" data-task="${activity.task}">
+                        <div class="activity-avatar">${activity.emoji}</div>
+                        <div class="activity-details">
+                            <p class="activity-text"><strong>${activity.user}</strong> ${activity.action} <em>"${activity.task}"</em></p>
+                            <p class="activity-time">${activity.time}</p>
+                        </div>
+                        <div class="activity-points">+${activity.points} pts</div>
+                        <div class="activity-controls">${auditBtn}</div>
+                    </div>
+                `;
+                container.innerHTML += itemHTML;
+            });
+
+            if (filtered.length > 4) {
+                container.innerHTML += `<div class="show-more-container"><button class="show-more" onclick="openFullHistoryModal()">Mostrar más</button></div>`;
+            }
+
+            // Populate user filter options
+            const userSelect = document.getElementById('historyUserFilter');
+            if (userSelect) {
+                // clear existing except first
+                Array.from(userSelect.querySelectorAll('option')).slice(1).forEach(o=>o.remove());
+                const users = Array.from(new Set(allActivities.map(a=>a.user)));
+                users.forEach(u=>{
+                    const opt = document.createElement('option'); opt.value = u; opt.textContent = u; userSelect.appendChild(opt);
+                });
+            }
+        }
+
+        // Ensure paused task card has appropriate controls
+        function ensurePausedControls(card) {
+            if (!card) return;
+            const buttonsArea = card.querySelector('.task-actions .task-buttons') || card.querySelector('.task-actions');
+            if (!buttonsArea) return;
+            if (buttonsArea.querySelector('.btn-rescue') || buttonsArea.querySelector('.btn-restart')) return;
+
+            const owner = card.dataset.owner || (Object.values(appState.session.registeredAccounts)[0] ? Object.values(appState.session.registeredAccounts)[0].name : 'Álex');
+            const currentUser = Object.values(appState.session.registeredAccounts)[0] ? Object.values(appState.session.registeredAccounts)[0].name : 'Álex';
+
+            const btn = document.createElement('button');
+            if (owner === currentUser) {
+                btn.className = 'btn-restart';
+                btn.textContent = 'Reanudar';
+                btn.onclick = (e) => resumePausedTask(btn, e);
+            } else {
+                btn.className = 'btn-rescue';
+                btn.textContent = 'Rescatar';
+                btn.onclick = (e) => rescuePausedCard(btn, e);
+            }
+            buttonsArea.appendChild(btn);
+        }
+
+        function openFullHistoryModal() {
+            const modalList = document.getElementById('activityLogContent');
+            if (!modalList) return openModal('activityLogModal');
+            modalList.innerHTML = '';
+            const users = Object.keys(appState.users).slice(0,6);
+            const sampleTasks = ['Bajar basura','Lavar platos','Aspirar salón','Limpiar baño','Ordenar armario','Regar plantas'];
+            users.forEach((u, idx) => {
+                const isPaused = appState.pausedTasks.some(p => p.owner === u);
+                const task = sampleTasks[idx % sampleTasks.length];
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                item.dataset.user = u;
+                item.innerHTML = `
+                    <div class="activity-avatar">👤</div>
+                    <div class="activity-details">
+                        <p class="activity-text"><strong>${u}</strong> ${isPaused ? 'pausó' : 'completó'} <em>"${task}"</em></p>
+                        <p class="activity-time">hace ${(idx+1)*3} horas</p>
+                    </div>
+                    <div class="activity-points">+${Math.floor(Math.random()*50)+10} pts</div>
+                    <div class="activity-controls"><button class="btn-audit" onclick="auditActivity(this)">Tarea No Realizada</button></div>
+                `;
+                modalList.appendChild(item);
+            });
+            openModal('activityLogModal');
+        }
+
+        function applyHistoryFilters() {
+            renderFloorHistory();
+        }
+
+        function auditActivity(button) {
+            const item = button.closest('.activity-item');
+            if (!item) return;
+            const user = item.dataset.user || null;
+            if (user && appState.users[user] !== undefined) {
+                appState.users[user] = Math.max(0, appState.users[user] - 10);
+                updateLeaderboardUserScore(user, appState.users[user]);
+            }
+            item.classList.add('audited');
+            button.textContent = 'Auditada';
+            button.disabled = true;
+        }
+
+        function rescuePausedCard(button, event) {
+            event.preventDefault();
+            const card = button.closest('.task-card');
+            if (!card) return;
+            card.dataset.rescued = 'true';
+            const mainList = document.querySelector('.tab-content[data-tab="my-tasks"] .tasks-list');
+            if (mainList) {
+                const btn = card.querySelector('.btn-rescue'); if (btn) btn.remove();
+                card.classList.remove('paused-task-view');
+                card.dataset.isPaused = 'false';
+                mainList.appendChild(card);
+                // ensure complete button is enabled for rescued tasks
+                const completeBtn = card.querySelector('.btn-complete');
+                if (completeBtn) completeBtn.disabled = false;
+            }
+            // remove from appState.pausedTasks if present
+            const owner = card.dataset.owner;
+            const title = card.querySelector('.task-details h3')?.textContent;
+            appState.pausedTasks = appState.pausedTasks.filter(p => !(p.owner === owner && p.name === title));
+            renderPausedTasks();
+        }
+
+        function resumePausedTask(button, event) {
+            event.preventDefault();
+            const card = button.closest('.task-card');
+            if (!card) return;
+            const pausedAt = card.dataset.pausedAt ? new Date(card.dataset.pausedAt) : null;
+            let penalty = 0;
+            if (pausedAt) {
+                const days = Math.floor((Date.now() - pausedAt.getTime())/(1000*60*60*24));
+                if (days > 2) penalty = days * 2;
+            }
+            const currentUser = Object.values(appState.session.registeredAccounts)[0] ? Object.values(appState.session.registeredAccounts)[0].name : 'Álex';
+            appState.users[currentUser] = Math.max(0, (appState.users[currentUser]||0) - penalty);
+            updateLeaderboardUserScore(currentUser, appState.users[currentUser]);
+
+            const mainList = document.querySelector('.tab-content[data-tab="my-tasks"] .tasks-list');
+            if (mainList) {
+                card.dataset.isPaused = 'false';
+                card.classList.remove('paused-task-view');
+                mainList.appendChild(card);
+            }
+            renderPausedTasks();
+        }
+
+        // Renderizar mis tareas completadas
+        function renderMyCompletedTasks() {
+            const container = document.getElementById('completed-tasks-list');
+            container.innerHTML = '';
+
+            if (!appState.completedTasks || appState.completedTasks.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>✅ Aún no has completado tareas</p></div>';
+                return;
+            }
+
+            appState.completedTasks.forEach(task => {
+                const date = new Date(task.date);
+                const formattedDate = date.toLocaleDateString('es-ES', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const itemHTML = `
+                    <div class="completed-task-item">
+                        <div class="completed-task-info">
+                            <h4>${task.name}</h4>
+                            <p class="completed-task-date">📅 ${formattedDate}</p>
+                            ${task.sharedWith ? `<p class="completed-task-shared">🤝 Compartida con ${task.sharedWith}</p>` : ''}
+                        </div>
+                        <div class="completed-task-points">
+                            <span class="points-total">+${task.totalPoints}</span>
+                            <span class="points-gained">Ganados: ${task.gainedPoints}</span>
+                            ${task.rescued ? '<span class="badge-rescued">Rescatada</span>' : ''}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += itemHTML;
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+                // Theme initialization: read saved theme and apply to <html> via data-theme
+                try {
+                    const root = document.documentElement;
+                    const themeToggleBtn = document.getElementById('themeToggle');
+                    const savedTheme = localStorage.getItem('taskride.theme');
+                    if (savedTheme) root.setAttribute('data-theme', savedTheme);
+                    const updateIcon = () => {
+                        const cur = root.getAttribute('data-theme') === 'light' ? '☀️' : '🌙';
+                        if (themeToggleBtn) themeToggleBtn.textContent = cur;
+                    };
+                    updateIcon();
+                    if (themeToggleBtn) themeToggleBtn.addEventListener('click', () => {
+                        const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                        root.setAttribute('data-theme', next);
+                        localStorage.setItem('taskride.theme', next);
+                        updateIcon();
+                    });
+                } catch (e) { console.warn('Theme init error', e); }
             restoreSessionFromStorage();
             syncUserScoreWithHistory();
             initializeTaskCards();
@@ -1091,6 +1467,12 @@
             updatePendingCounter();
             renderCompletedTasksHistory();
             renderProfileChart();
+            
+            // Refrescar pestaña activa si es "my-completed"
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab && activeTab.dataset.tab === 'my-completed') {
+                renderMyCompletedTasks();
+            }
 
             if (document.querySelectorAll('.tasks-list .task-card').length === 0) {
                 updateHealth(Math.min(100, appState.health + 5));
@@ -1132,7 +1514,8 @@
             if (Number.isNaN(startedAt.getTime())) return basePoints;
 
             const elapsedDays = Math.floor((Date.now() - startedAt.getTime()) / DAY_MS);
-            const reductionMultiplier = Math.max(0.2, 1 - (elapsedDays * 0.2));
+            // Reduce 10% per elapsed day until minimum 20% of basePoints
+            const reductionMultiplier = Math.max(0.2, 1 - (elapsedDays * 0.1));
 
             return Math.max(1, Math.round(basePoints * reductionMultiplier));
         }
@@ -1712,6 +2095,19 @@
                 taskCard.dataset.isPaused = 'true';
                 taskCard.dataset.pausedAt = new Date().toISOString();
 
+                // mark owner as current user and move to paused tab list
+                const currentUser = Object.values(appState.session.registeredAccounts)[0] ? Object.values(appState.session.registeredAccounts)[0].name : 'Álex';
+                taskCard.dataset.owner = currentUser;
+                const pausedList = document.getElementById('paused-tasks-list');
+                if (pausedList) pausedList.appendChild(taskCard);
+
+                // add to state list if not present
+                const basePoints = parseInt(taskCard.dataset.basePoints || '30', 10) || 30;
+                const taskTitle = taskCard.querySelector('.task-details h3')?.textContent || 'Tarea';
+                if (!appState.pausedTasks.some(p => p.owner === currentUser && p.name === taskTitle)) {
+                    appState.pausedTasks.push({ owner: currentUser, name: taskTitle, points: basePoints, icon: '⏸️', pausedAt: taskCard.dataset.pausedAt });
+                }
+
                 button.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6l10 6-10 6V6z"></path></svg> <span>Reanudar</span>';
                 button.title = 'Reanudar esta tarea';
 
@@ -1745,9 +2141,24 @@
                 timeElement.textContent = taskCard.dataset.defaultMeta || 'Pendiente';
                 timeElement.classList.remove('paused-badge');
                 updateHealth(appState.health + 2);
+
+                // remove from appState.pausedTasks if present
+                const owner = taskCard.dataset.owner || (Object.values(appState.session.registeredAccounts)[0] ? Object.values(appState.session.registeredAccounts)[0].name : 'Álex');
+                const title = taskCard.querySelector('.task-details h3')?.textContent || '';
+                appState.pausedTasks = appState.pausedTasks.filter(p => !(p.owner === owner && p.name === title));
+
+                // move back to main tasks list if exists
+                const tasksList = document.querySelector('.tab-content[data-tab="my-tasks"] .tasks-list');
+                if (tasksList) tasksList.appendChild(taskCard);
             }
 
             refreshPausedTaskCards();
+            
+            // Refrescar pestaña activa si es "paused-tasks"
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab && activeTab.dataset.tab === 'paused-tasks') {
+                renderPausedTasks();
+            }
         }
 
         // Rescata una tarea pausada del feed y la agrega como pendiente para el usuario actual.
@@ -1915,6 +2326,10 @@
                 if (auditNote) {
                     auditNote.remove();
                 }
+
+                // move back to main tasks list
+                const tasksList = document.querySelector('.tab-content[data-tab="my-tasks"] .tasks-list');
+                if (tasksList) tasksList.appendChild(taskCard);
             }
         }
 
