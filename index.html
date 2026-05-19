@@ -484,7 +484,7 @@
 // Cambia este número para resetear todos los datos de la demo.
 // Cualquier otro cambio de código que no toque esta constante
 // dejará los datos guardados intactos al recargar.
-const DEMO_VERSION = 1;
+const DEMO_VERSION = 2;
 const DEMO_VERSION_KEY = 'taskride.demoVersion';
 
 /** Borra todos los datos del localStorage si la versión de demo ha cambiado */
@@ -589,7 +589,32 @@ function loadSharedState() {
             { id:'f5', owner:'David',   name:'Ordenar el salón',            points:9,  icon:'D', votes:0, date:new Date().toISOString() }
         ],
         // Tareas pausadas visibles para rescatar
-        pausedByOthers: [],
+        pausedByOthers: [
+            {
+                id:       'p_carlos_1',
+                name:     'Desinfectar el baño completo',
+                icon:     '🧼',
+                points:   14,
+                pausedBy: 'Carlos',
+                pausedAt: new Date(Date.now() - 1 * 864e5).toISOString()
+            },
+            {
+                id:       'p_laura_1',
+                name:     'Limpiar la nevera a fondo',
+                icon:     '🧊',
+                points:   11,
+                pausedBy: 'Laura',
+                pausedAt: new Date(Date.now() - 2 * 864e5).toISOString()
+            },
+            {
+                id:       'p_david_1',
+                name:     'Ordenar y limpiar la terraza',
+                icon:     '🌿',
+                points:   9,
+                pausedBy: 'David',
+                pausedAt: new Date(Date.now() - 3 * 864e5).toISOString()
+            }
+        ],
         // Nombre del piso
         floorName: 'Los Estudiantes'
     };
@@ -1076,6 +1101,25 @@ function rescueTask(id) {
             // Eliminar del panel compartido
             sharedState.pausedByOthers = sharedState.pausedByOthers.filter(p => p.id !== id);
             saveSharedState(sharedState);
+
+            // Eliminar la tarea del myTasks del usuario que la pausó
+            // (si está registrado en USERS_DB, actualizar también su localStorage)
+            const ownerKey = `taskride.user.${task.pausedBy}`;
+            try {
+                const ownerRaw = localStorage.getItem(ownerKey);
+                const ownerData = ownerRaw ? JSON.parse(ownerRaw) : null;
+                if (ownerData && ownerData.myTasks) {
+                    // Quitar la tarea (por id original o por nombre, por si fue clonada)
+                    ownerData.myTasks = ownerData.myTasks.filter(t => t.id !== id && !(t.isPaused && t.name === task.name));
+                    localStorage.setItem(ownerKey, JSON.stringify(ownerData));
+                }
+                // Si el dueño es el usuario activo (caso extremo), actualizar también en memoria
+                if (task.pausedBy === activeUser) {
+                    userData.myTasks = userData.myTasks.filter(t => t.id !== id && !(t.isPaused && t.name === task.name));
+                }
+            } catch(e) {
+                console.warn('[TaskRide] No se pudo limpiar myTasks del usuario que pausó:', e);
+            }
 
             // Añadir a mis tareas como tarea rescatada
             userData.myTasks.unshift({
