@@ -9,13 +9,55 @@
 </head>
 <body>
 
+<!-- ============================================================
+     PANTALLA DE LOGIN
+     Se muestra al inicio o tras cerrar sesión.
+============================================================ -->
+<div id="loginScreen" class="login-screen">
+    <div class="login-card">
+        <div class="login-logo">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            <span>TaskRide</span>
+        </div>
+        <h2 class="login-title">Bienvenido al piso</h2>
+        <p class="login-subtitle">Inicia sesión para gestionar las tareas del hogar</p>
+
+        <div class="login-form">
+            <div class="login-field">
+                <label>Usuario</label>
+                <input type="text" id="loginUsername" class="profile-edit-input" placeholder="Ej: Jesus" autocomplete="username">
+            </div>
+            <div class="login-field">
+                <label>Contraseña</label>
+                <input type="password" id="loginPassword" class="profile-edit-input" placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <p id="loginError" class="login-error" style="display:none;">Usuario o contraseña incorrectos.</p>
+            <button class="btn-complete login-btn" onclick="doLogin()">Entrar al piso 🏠</button>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- ============================================================
+     APP PRINCIPAL (oculta hasta login)
+============================================================ -->
+<div id="appScreen" style="display:none;">
+
+    <!-- NAVBAR -->
     <nav class="navbar">
         <div class="container navbar-content">
             <div class="logo">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
                 <span>TaskRide</span>
             </div>
-            
+
             <div class="floor-name-display" title="Editar en Perfil" onclick="openModal('profileModal')">
                 🏠 <span id="navFloorName">Los Estudiantes</span>
             </div>
@@ -24,46 +66,55 @@
                 <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">🌙</button>
                 <div class="health-indicator">
                     <div class="health-label">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
                         <span>Salud del Piso</span>
                     </div>
                     <div class="health-bar-row">
                         <div class="health-bar-container">
-                            <div class="health-bar healthy" id="healthBarElement" style="width: 85%;"></div>
+                            <div class="health-bar healthy" id="healthBarElement" style="width:85%;"></div>
                         </div>
                         <span class="health-percentage" id="healthPercentageElement">85%</span>
                     </div>
                 </div>
                 <div class="profile-chip" role="button" tabindex="0" onclick="openModal('profileModal')">
                     <div id="profileNameDisplay" class="profile-name">Mi Perfil</div>
-                    <div class="avatar current-user-avatar">A</div>
+                    <div class="avatar current-user-avatar" id="navAvatar">?</div>
                 </div>
                 <button class="nav-help-btn" onclick="openModal('helpModal')" aria-label="Ayuda" title="Guía de Mecánicas">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                    </svg>
                 </button>
             </div>
         </div>
     </nav>
 
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="container main-content">
         <div class="grid-layout">
-            
+
+            <!-- SECCIÓN IZQUIERDA: Tareas -->
             <section class="tasks-section">
-                <header class="section-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <header class="section-header">
                     <div>
                         <h1 id="tabTitle">Mis Tareas Pendientes</h1>
                         <p class="section-subtitle" id="tabSubtitle">📋 Tienes tareas asignadas. ¡Complétalas para ganar puntos!</p>
                     </div>
-                    <div class="tokens-badge" id="tokensBadge">
-                        🎟️ Comodines: <strong id="tokenCount">2</strong>/2
+                    <div class="tokens-badge" id="tokensBadge" onclick="openModal('shopModal')" title="Ver economía y comodines">
+                        <span class="tokens-badge-block">🎟️ <strong id="tokenCount">2</strong> comodines</span>
+                        <span class="tokens-badge-sep">|</span>
+                        <span class="tokens-badge-block">🪙 <strong id="walletCount">0</strong> pts</span>
                     </div>
                 </header>
 
                 <div class="tabs-navigation">
-                    <button class="tab-btn active" data-tab="my-tasks" onclick="switchTab('my-tasks')">Mis Tareas</button>
-                    <button class="tab-btn" data-tab="paused-tasks" onclick="switchTab('paused-tasks')">Tareas Pausadas</button>
-                    <button class="tab-btn" data-tab="floor-history" onclick="switchTab('floor-history')">Historial del Piso</button>
-                    <button class="tab-btn" data-tab="my-completed" onclick="switchTab('my-completed')">Mis Completadas</button>
+                    <button class="tab-btn active" data-tab="my-tasks"      onclick="switchTab('my-tasks')">Mis Tareas</button>
+                    <button class="tab-btn"         data-tab="paused-tasks"  onclick="switchTab('paused-tasks')">Tareas Pausadas</button>
+                    <button class="tab-btn"         data-tab="floor-history" onclick="switchTab('floor-history')">Historial del Piso</button>
+                    <button class="tab-btn"         data-tab="my-completed"  onclick="switchTab('my-completed')">Mis Completadas</button>
                 </div>
 
                 <div class="tab-content active" data-tab="my-tasks">
@@ -76,8 +127,13 @@
 
                 <div class="tab-content" data-tab="floor-history">
                     <div class="activity-list" id="floor-history-list"></div>
-                    <div class="show-more-container" id="history-show-more" style="display:none; margin-top:1rem; text-align:center;">
-                        <button class="btn-complete" onclick="openModal('fullHistoryModal')" style="padding: 0.6rem 1rem; width: 100%; justify-content: center;">Mostrar todo el historial</button>
+                    <div class="show-more-container" id="history-show-more"
+                         style="display:none;margin-top:1rem;text-align:center;">
+                        <button class="btn-complete"
+                            onclick="openModal('fullHistoryModal')"
+                            style="width:100%;justify-content:center;">
+                            Mostrar todo el historial
+                        </button>
                     </div>
                 </div>
 
@@ -87,6 +143,7 @@
                 </div>
             </section>
 
+            <!-- SECCIÓN DERECHA: Leaderboard -->
             <aside class="leaderboard-section">
                 <div class="leaderboard-widget">
                     <div class="leaderboard-header">
@@ -102,816 +159,1517 @@
                     </div>
                 </div>
             </aside>
+
         </div>
     </main>
 
-    <div id="helpModal" class="modal">
-        <div class="modal-content" style="max-width: 550px;">
-            <div class="modal-header">
-                <div><h2>❓ Guía de Mecánicas</h2><p class="modal-subtitle">Aprende a usar TaskRide</p></div>
-                <button class="modal-close" onclick="closeModal('helpModal')"><span>&times;</span></button>
-            </div>
-            <div class="modal-body">
-                <div class="help-row">
-                    <div class="help-icon-box">
-                        <button class="btn-checkbox" style="pointer-events:none;"><div class="chk-circle" style="width:32px;height:32px;border-width:2px;box-shadow:none;"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div></button>
-                    </div>
-                    <div class="help-text"><strong>Completar Tareas:</strong> Pulsa el botón circular junto a tu tarea para marcarla como hecha y sumar los puntos a tu perfil.</div>
-                </div>
-                <div class="help-row">
-                    <div class="help-icon-box">
-                        <button class="btn-suggest" style="pointer-events:none; padding:0.4rem;">🪄 División</button>
-                    </div>
-                    <div class="help-text"><strong>Sugerir División:</strong> Si una tarea es muy compleja, pulsa este botón para que el sistema te la divida en subtareas más pequeñas.</div>
-                </div>
-                <div class="help-row">
-                    <div class="help-icon-box">
-                        <button class="btn-timeout" style="pointer-events:none; padding:0.4rem 0.6rem;"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg> <span>Pausar</span></button>
-                    </div>
-                    <div class="help-text"><strong>Pausar:</strong> Usa comodines (🎟️) para pausar tareas difíciles. Perderán valor con los días y bajarán al fondo de la lista.</div>
-                </div>
-                <div class="help-row">
-                    <div class="help-icon-box">
-                        <div class="task-icon" style="padding:0.4rem; font-size:1.2rem; pointer-events:none;">🆘</div>
-                    </div>
-                    <div class="help-text"><strong>Rescatar:</strong> Ve a "Tareas Pausadas" para recuperar las tareas que otros no pueden hacer y gánate sus puntos.</div>
-                </div>
-                <div class="help-row">
-                    <div class="help-icon-box">
-                        <button class="btn-audit-red" style="pointer-events:none; padding:0.4rem 0.6rem; margin-bottom: 0;">Reportar</button>
-                    </div>
-                    <div class="help-text"><strong>Verificar:</strong> En el Historial del Piso, usa este botón para revocar puntos a compañeros que hayan marcado tareas sin hacerlas.</div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-complete" onclick="closeModal('helpModal')" style="width: 100%; justify-content:center;">¡Entendido, a limpiar!</button>
-            </div>
+</div><!-- /appScreen -->
+
+
+<!-- ============================================================
+     MODALES
+============================================================ -->
+
+<!-- MODAL: Tienda -->
+<div id="shopModal" class="modal">
+    <div class="modal-content" style="max-width:450px;">
+        <div class="modal-header">
+            <div><h2>🪙 Tu Monedero y Comodines</h2><p class="modal-subtitle">Gestión de recursos</p></div>
+            <button class="modal-close" onclick="closeModal('shopModal')"><span>&times;</span></button>
         </div>
-    </div>
-
-    <div id="profileModal" class="modal">
-        <div class="modal-content profile-modal-content">
-            <div class="modal-header">
-                <div><h2>👤 Mi perfil</h2><p class="modal-subtitle">Ajustes del piso y personales</p></div>
-                <button class="modal-close" onclick="closeModal('profileModal')"><span>&times;</span></button>
-            </div>
-            <div class="modal-body profile-body" style="padding-bottom: 0;">
-                
-                <div class="profile-pic-section">
-                    <div class="avatar current-user-avatar profile-pic-large">A</div>
-                    <label class="btn-timeout" style="cursor: pointer; margin-left:1rem;">
-                        Subir Foto
-                        <input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="uploadProfilePic(event)">
-                    </label>
-                </div>
-
-                <div class="profile-info-grid">
-                    <div class="profile-field">
-                        <span class="profile-field-label">Nombre del Usuario</span>
-                        <input type="text" id="editProfileName" class="profile-edit-input" value="Álex Fernández">
-                    </div>
-                    <div class="profile-field">
-                        <span class="profile-field-label">Correo Electrónico</span>
-                        <input type="email" id="editProfileEmail" class="profile-edit-input" value="alex@ejemplo.com" disabled title="Usa el botón de cambiar correo">
-                    </div>
-                    <div class="profile-field" style="grid-column: 1 / -1;">
-                        <span class="profile-field-label">Nombre del Piso</span>
-                        <input type="text" id="editFloorName" class="profile-edit-input" value="Los Estudiantes">
-                    </div>
-                </div>
-                
-                <div class="profile-actions-bar">
-                    <div class="profile-actions-secondary">
-                        <button class="btn-outline" onclick="openModal('passwordResetModal')">Cambiar Contraseña</button>
-                        <button class="btn-logout" onclick="logoutAccount()">Cerrar Sesión</button>
-                    </div>
-                    <button class="btn-complete" onclick="saveProfile()">Guardar Cambios</button>
-                </div>
-
-                <div class="profile-chart-card">
-                    <h3>Tu progreso (últimos 10 días)</h3>
-                    <div class="profile-chart" id="profileChartBars"></div>
+        <div class="modal-body">
+            <p style="color:var(--text-main);font-size:.95rem;margin-bottom:1rem;">
+                Tienes <strong><span id="shopWalletCount">0</span> puntos disponibles</strong>.
+                Si llegas a puntos negativos entras en <strong>deuda con la app</strong>: tendrás que
+                completar tareas para volver al positivo antes de poder gastar puntos.
+            </p>
+            <div class="help-row" style="margin-bottom:0;">
+                <div class="help-icon-box"><span style="font-size:1.5rem;">🎟️</span></div>
+                <div class="help-text">
+                    <strong>Comprar Comodín (50 pts)</strong>
+                    Gasta puntos para comprar un comodín extra de pausa. Es un recurso de emergencia.
+                    <button class="btn-complete" style="margin-top:.8rem;width:100%;justify-content:center;"
+                        onclick="buyToken()">Comprar por 50 pts</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div id="passwordResetModal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <div class="modal-header">
-                <div><h2>🔐 Cambiar contraseña</h2></div>
-                <button class="modal-close" onclick="closeModal('passwordResetModal')"><span>&times;</span></button>
-            </div>
-            <form class="modal-body password-form" onsubmit="event.preventDefault(); closeModal('passwordResetModal'); alert('Contraseña actualizada');">
-                <div class="profile-field" style="margin-bottom: 0.8rem;">
-                    <span class="profile-field-label">Contraseña actual</span><input type="password" class="profile-edit-input" required>
-                </div>
-                <div class="profile-field" style="margin-bottom: 0.8rem;">
-                    <span class="profile-field-label">Nueva contraseña</span><input type="password" class="profile-edit-input" required>
-                </div>
-                <div class="modal-footer" style="padding: 0; background: transparent; border: none; margin-top: 1rem;">
-                    <button class="btn-timeout" type="button" onclick="closeModal('passwordResetModal')">Cancelar</button>
-                    <button class="btn-complete" type="submit">Actualizar</button>
-                </div>
-            </form>
+<!-- MODAL: Ayuda -->
+<div id="helpModal" class="modal">
+    <div class="modal-content" style="max-width:620px;">
+        <div class="modal-header">
+            <div><h2>📖 Guía Completa de TaskRide</h2><p class="modal-subtitle">Todo lo que necesitas saber para gestionar el piso</p></div>
+            <button class="modal-close" onclick="closeModal('helpModal')"><span>&times;</span></button>
         </div>
-    </div>
+        <div class="modal-body" style="padding:1.5rem;">
 
-    <div id="fullHistoryModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div><h2>📋 Historial del Piso Completo</h2><p class="modal-subtitle">Todas las tareas de tus compañeros</p></div>
-                <button class="modal-close" onclick="closeModal('fullHistoryModal')"><span>&times;</span></button>
-            </div>
-            <div class="modal-body activity-list-modal" id="full-history-list"></div>
-        </div>
-    </div>
+            <div class="help-section-title">🎯 ¿Cómo funciona TaskRide?</div>
+            <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.25rem;line-height:1.6;">
+                TaskRide convierte las tareas del hogar en un sistema de puntos compartido. Completa tareas para ganar
+                puntos, compite en el ranking mensual y evita quedarte el último… o te toca pagar la cena 🍕
+            </p>
 
-    <div id="sharePointsModal" class="modal">
-        <div class="modal-content share-points-modal-content">
-            <div class="modal-header">
-                <div><h2>🤝 Repartir puntos del rescate</h2><p class="modal-subtitle" id="sharePointsSubtitle"></p></div>
-            </div>
-            <div class="modal-body">
-                <p class="share-copy">Selecciona qué porcentaje quieres ceder al compañero por pausar la tarea.</p>
-                <div class="share-options" id="shareOptionsGroup">
-                    <button class="share-option active" data-share="0" onclick="selectSharePercentage(0)">0%</button>
-                    <button class="share-option" data-share="25" onclick="selectSharePercentage(25)">25%</button>
-                    <button class="share-option" data-share="50" onclick="selectSharePercentage(50)">50%</button>
-                </div>
-                <div class="share-preview" id="sharePreview"></div>
-            </div>
-            <div class="modal-footer modal-actions">
-                <button class="btn-timeout" onclick="closeModal('sharePointsModal')">Cancelar</button>
-                <button class="btn-complete" onclick="confirmRescuedTaskCompletion()">Completar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="confirmActionModal" class="modal">
-        <div class="modal-content" style="max-width: 420px;">
-            <div class="modal-header">
-                <div><h2 id="confirmModalTitle">Confirmar Acción</h2></div>
-                <button class="modal-close" onclick="closeModal('confirmActionModal')"><span>&times;</span></button>
-            </div>
-            <div class="modal-body" style="text-align: center; padding: 2rem 1.5rem;">
-                <p id="confirmModalText" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem;"></p>
-                <p id="confirmModalSubtext" style="font-size: 0.9rem; color: var(--text-muted);"></p>
-            </div>
-            <div class="modal-footer" style="justify-content: center; gap: 1rem; background: transparent; border: none; padding-top: 0;">
-                <button class="btn-timeout" onclick="closeModal('confirmActionModal')" style="width: 100%; justify-content: center;">Cancelar</button>
-                <button class="btn-complete" id="confirmModalBtn" style="width: 100%; justify-content: center;">Confirmar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="toastContainer" class="toast-container"></div>
-
-    <script>
-        let activeUser = 'Álex';
-        const appState = {
-            users: { 'Marta': 42, 'Álex': 28, 'Carlos': 15, 'Laura': 12, 'David': 9 },
-            tokens: 2, 
-            health: 85,
-            profilePicBase64: null,
-            
-            myTasks: [
-                { id: 't1', name: 'Bajar la basura y reciclaje', meta: 'Hoy (antes de 22:00)', points: 1, icon: '🗑️', urgency: 'urgent', difficulty: 'easy', isPaused: false, subtasks: [] },
-                { id: 't2', name: 'Recoger lavavajillas', meta: 'Para mañana', points: 3, icon: '🍽️', urgency: 'medium', difficulty: 'medium', isPaused: false, subtasks: [] },
-                { id: 't3', name: 'Limpieza a fondo del baño', meta: 'Quedan 4 días', points: 12, icon: '🧽', urgency: 'low', difficulty: 'hard', isPaused: false, subtasks: [] }
-            ],
-
-            completedTasks: [
-                { id: 'c1', name: 'Limpieza general del salón', points: 14, shared: 0, date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), canUndo: false }, 
-                { id: 'c2', name: 'Aspirar pasillos', points: 9, shared: 0, date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), canUndo: false },
-                { id: 'c3', name: 'Tirar vidrio y cartón', points: 5, shared: 0, date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), canUndo: false } 
-            ],
-
-            floorHistory: [
-                { id: 'f1', owner: 'Marta', name: 'Cocinar para todos (Semana)', points: 22, icon: '👩🏻', date: new Date().toISOString() },
-                { id: 'f2', owner: 'Marta', name: 'Limpieza a fondo de cocina', points: 20, icon: '👩🏻', date: new Date().toISOString() },
-                { id: 'f3', owner: 'Carlos', name: 'Fregar todos los platos', points: 15, icon: '👨🏽', date: new Date().toISOString() },
-                { id: 'f4', owner: 'Laura', name: 'Quitar el polvo general', points: 12, icon: '👩🏼', date: new Date().toISOString() },
-                { id: 'f5', owner: 'David', name: 'Ordenar el salón', points: 9, icon: '👨🏻', date: new Date().toISOString() }
-            ],
-
-            pausedByOthers: [
-                { id: 'p1', owner: 'Marta', name: 'Limpiar cristales', points: 8, icon: '🪟' },
-                { id: 'p2', owner: 'Carlos', name: 'Comprar detergente', points: 3, icon: '🛒' }
-            ],
-
-            pendingRescueCard: null,
-            selectedShare: 0
-        };
-
-        const avatars = { 'Marta':'👩🏻', 'Álex':'A', 'Carlos':'👨🏽', 'Laura':'👩🏼', 'David':'👨🏻' };
-        const subtitles = { 'Marta':'Imparable 🔥', 'Carlos':'Necesita un empujón', 'Laura':'En progreso', 'David':'Puede mejorar' };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-            calculateOverallHealth();
-            updateTimer();
-            setInterval(updateTimer, 60000); 
-            renderMyTasks();
-            updateLeaderboard();
-            updateTokensUI();
-            if (!localStorage.getItem('taskride.tutorial')) {
-                openModal('helpModal');
-                localStorage.setItem('taskride.tutorial', 'true');
-            }
-        });
-
-        function calculateOverallHealth() {
-            let healthScore = 100;
-            appState.myTasks.forEach(t => {
-                if (t.isPaused) healthScore -= 8;
-                else {
-                    if (t.urgency === 'urgent') healthScore -= 12;
-                    else if (t.urgency === 'medium') healthScore -= 6;
-                    else healthScore -= 2;
-                }
-            });
-            healthScore -= (appState.pausedByOthers.length * 5);
-            const userPoints = Object.values(appState.users);
-            const totalPoints = userPoints.reduce((acc, p) => acc + p, 0);
-            
-            if (totalPoints > 0 && userPoints.length > 0) {
-                const avg = totalPoints / userPoints.length;
-                const maxPoints = Math.max(...userPoints);
-                if (maxPoints > avg * 1.8) healthScore -= 15;
-                else if (maxPoints > avg * 1.4) healthScore -= 8; 
-            }
-
-            appState.health = Math.max(0, Math.min(100, Math.round(healthScore)));
-            
-            const bar = document.getElementById('healthBarElement');
-            const perc = document.getElementById('healthPercentageElement');
-            if (bar && perc) {
-                bar.style.width = `${appState.health}%`;
-                perc.textContent = `${appState.health}%`;
-                bar.className = 'health-bar';
-                if (appState.health >= 70) bar.classList.add('healthy');
-                else if (appState.health >= 40) bar.classList.add('alert');
-                else bar.classList.add('critical');
-            }
-        }
-
-        function updateTimer() {
-            const now = new Date();
-            const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-            const diff = nextMonth - now;
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            const mins = Math.floor((diff / 1000 / 60) % 60);
-            const el = document.getElementById('leaderboardResetCountdown');
-            if(el) el.innerHTML = `⏳ Fin de mes en: <strong>${days}d ${hours}h ${mins}m</strong>`;
-        }
-
-        function suggestSubtasks(taskId) {
-            const task = appState.myTasks.find(t => t.id === taskId);
-            if(!task) return;
-
-            const nameLower = task.name.toLowerCase();
-            let generated = [];
-            if(nameLower.includes('baño')) generated = ['Limpiar inodoro y lavabo', 'Fregar el suelo', 'Limpiar el espejo'];
-            else if(nameLower.includes('lavavajillas') || nameLower.includes('cocina')) generated = ['Vaciar lo limpio', 'Meter lo sucio', 'Pasar bayeta a la encimera'];
-            else generated = ['Preparar utensilios', 'Realizar limpieza principal', 'Recoger zona'];
-
-            task.subtasks = generated.map((name, i) => ({ id: `s_${Date.now()}_${i}`, name, done: false }));
-            renderMyTasks();
-        }
-
-        function toggleSubtask(taskId, subtaskId) {
-            const task = appState.myTasks.find(t => t.id === taskId);
-            const st = task.subtasks.find(s => s.id === subtaskId);
-            st.done = !st.done;
-        }
-
-        function renderMyTasks() {
-            const list = document.getElementById('my-tasks-list');
-            list.innerHTML = '';
-            
-            const active = appState.myTasks.filter(t => !t.isPaused);
-            const paused = appState.myTasks.filter(t => t.isPaused);
-            
-            [...active, ...paused].forEach(task => {
-                const isP = task.isPaused;
-                const canPause = task.difficulty === 'hard';
-                
-                const pauseIcon = `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>`;
-                const pauseBtnHTML = canPause ? `<button class="btn-timeout" onclick="togglePause('${task.id}')" title="Gastar 1 comodín">
-                    ${isP ? '<span>Reanudar</span>' : `${pauseIcon} <span>Pausar</span>`}
-                </button>` : '';
-
-                let subtasksHTML = '';
-                if (task.subtasks && task.subtasks.length > 0) {
-                    subtasksHTML = `<div class="subtasks-container">
-                        ${task.subtasks.map(st => `
-                            <label class="subtask-label">
-                                <input type="checkbox" ${st.done ? 'checked' : ''} onchange="toggleSubtask('${task.id}', '${st.id}')" ${isP ? 'disabled' : ''}>
-                                <span>${st.name}</span>
-                            </label>
-                        `).join('')}
-                    </div>`;
-                } else if (!isP && (task.difficulty === 'hard' || task.difficulty === 'medium')) {
-                    subtasksHTML = `<button class="btn-suggest" onclick="suggestSubtasks('${task.id}')">🪄 Sugerir división</button>`;
-                }
-
-                const btnCompleteHTML = `
-                    <button class="btn-checkbox" onclick="completeTask('${task.id}')" ${isP ? 'disabled' : ''} title="Marcar completada">
-                        <div class="chk-circle"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
+            <div class="help-block help-block--green">
+                <div class="help-block-icon">
+                    <button class="btn-checkbox" style="pointer-events:none;">
+                        <div class="chk-circle" style="width:36px;height:36px;border-width:2px;box-shadow:none;">
+                            <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                        </div>
                     </button>
-                `;
+                </div>
+                <div class="help-block-text">
+                    <strong>Completar Tareas</strong>
+                    Pulsa el botón circular verde junto a tu tarea para marcarla como hecha. Los puntos se suman
+                    automáticamente a tu perfil y al ranking. Tienes <strong>10 minutos</strong> para deshacer
+                    la acción si te equivocas.
+                </div>
+            </div>
 
-                list.innerHTML += `
-                    <article class="task-card ${task.urgency} ${isP ? 'paused-task' : ''}" data-id="${task.id}">
-                        <div class="task-info">
-                            <div class="task-icon">${task.icon}</div>
-                            <div class="task-details">
-                                <h3>${task.name}</h3>
-                                <p class="task-meta">${isP ? 'EN PAUSA • Perdiendo puntos' : task.meta}</p>
-                                ${subtasksHTML}
-                            </div>
-                        </div>
-                        <div class="task-actions">
-                            <div class="points-reward">
-                                <span class="pts-icon">⭐</span>
-                                <div><span class="pts-number">+${task.points}</span><span class="pts-label">Puntos</span></div>
-                            </div>
-                            <div class="task-buttons">
-                                ${!task.rescued ? pauseBtnHTML : ''}
-                                ${btnCompleteHTML}
-                            </div>
-                        </div>
-                    </article>
-                `;
-            });
-            document.getElementById('tabSubtitle').innerHTML = `📋 Tienes <strong>${active.length} tareas</strong> activas. ¡Complétalas para ganar puntos!`;
+            <div class="help-block help-block--orange">
+                <div class="help-block-icon">
+                    <button class="btn-timeout" style="pointer-events:none;">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+                        <span>Pausar</span>
+                    </button>
+                </div>
+                <div class="help-block-text">
+                    <strong>Pausar una Tarea 🎟️</strong>
+                    Solo disponible en tareas <em>difíciles</em>. Gasta <strong>1 comodín</strong> para pausarla temporalmente.
+                    La tarea aparecerá en el panel de <em>Tareas Pausadas</em> para que tus compañeros puedan rescatarla.
+                    Los puntos se degradan cada día que pasa.
+                </div>
+            </div>
+
+            <div class="help-block help-block--teal">
+                <div class="help-block-icon">
+                    <button class="btn-timeout btn-timeout--resume" style="pointer-events:none;">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        <span>Reanudar</span>
+                    </button>
+                </div>
+                <div class="help-block-text">
+                    <strong>Reanudar una Tarea</strong>
+                    Puedes reanudar cualquier tarea pausada tuya desde "Mis Tareas". <em>El comodín gastado
+                    no se devuelve</em> — una vez usado, está perdido. Pausar es una decisión importante.
+                </div>
+            </div>
+
+            <div class="help-block help-block--green">
+                <div class="help-block-icon">
+                    <button class="btn-rescue" style="pointer-events:none;">🆘 Rescatar</button>
+                </div>
+                <div class="help-block-text">
+                    <strong>Rescatar Tareas de Otros</strong>
+                    Ve a <strong>"Tareas Pausadas"</strong> para ver las tareas de compañeros en pausa.
+                    Si la completas tú, ganas los puntos. Al rescatar, puedes ceder un 0%, 25% o 50% al
+                    compañero que la pausó.
+                </div>
+            </div>
+
+            <div class="help-block help-block--purple">
+                <div class="help-block-icon">
+                    <button class="btn-suggest" style="pointer-events:none;">🪄 Sugerir división</button>
+                </div>
+                <div class="help-block-text">
+                    <strong>Dividir en Subtareas</strong>
+                    En tareas medianas o difíciles aparece este botón. Pulsa para que el sistema divida
+                    la tarea en subtareas más manejables.
+                </div>
+            </div>
+
+            <div class="help-block help-block--red">
+                <div class="help-block-icon">
+                    <button class="btn-audit-red" style="pointer-events:none;margin-bottom:0;">Reportar</button>
+                </div>
+                <div class="help-block-text">
+                    <strong>Reportar / Votación Anónima ⚖️</strong>
+                    En el <strong>Historial del Piso</strong>, si sospechas que una tarea no fue completada
+                    realmente, pulsa "Reportar". Tu voto es <em>anónimo</em>. Se necesitan
+                    <strong>3 votos</strong> para revocar la tarea y restar sus puntos al compañero.
+                </div>
+            </div>
+
+            <div class="help-separator"></div>
+
+            <div class="help-section-title">📂 Pestañas de Navegación</div>
+            <div class="help-tabs-grid">
+                <div class="help-tab-card">
+                    <span class="help-tab-dot help-tab-dot--primary"></span>
+                    <div><strong>Mis Tareas</strong><p>Tus tareas activas y pausadas.</p></div>
+                </div>
+                <div class="help-tab-card">
+                    <span class="help-tab-dot help-tab-dot--green"></span>
+                    <div><strong>Tareas Pausadas</strong><p>Tareas de compañeros para rescatar.</p></div>
+                </div>
+                <div class="help-tab-card">
+                    <span class="help-tab-dot help-tab-dot--yellow"></span>
+                    <div><strong>Historial del Piso</strong><p>Tareas completadas. Puedes reportar.</p></div>
+                </div>
+                <div class="help-tab-card">
+                    <span class="help-tab-dot help-tab-dot--teal"></span>
+                    <div><strong>Mis Completadas</strong><p>Tu historial personal con puntos.</p></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-complete" onclick="closeModal('helpModal')"
+                style="width:100%;justify-content:center;">¡Entendido, a limpiar! 🧹</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Perfil -->
+<div id="profileModal" class="modal">
+    <div class="modal-content profile-modal-content">
+        <div class="modal-header">
+            <div><h2>👤 Mi perfil</h2><p class="modal-subtitle">Ajustes del piso y personales</p></div>
+            <button class="modal-close" onclick="closeModal('profileModal')"><span>&times;</span></button>
+        </div>
+        <div class="modal-body profile-body">
+            <div class="profile-pic-section">
+                <div class="avatar current-user-avatar profile-pic-large" id="profileModalAvatar">?</div>
+                <label class="btn-upload-photo">
+                    📷 Subir Foto
+                    <input type="file" id="profilePicInput" accept="image/*"
+                        style="display:none;" onchange="uploadProfilePic(event)">
+                </label>
+            </div>
+
+            <div class="profile-info-grid">
+                <div class="profile-field">
+                    <span class="profile-field-label">Nombre del Usuario</span>
+                    <input type="text" id="editProfileName" class="profile-edit-input" value="">
+                </div>
+                <div class="profile-field">
+                    <span class="profile-field-label">Correo Electrónico</span>
+                    <input type="email" id="editProfileEmail" class="profile-edit-input" disabled
+                        title="Usa el botón de cambiar contraseña">
+                </div>
+                <div class="profile-field" style="grid-column:1/-1;">
+                    <span class="profile-field-label">Nombre del Piso</span>
+                    <input type="text" id="editFloorName" class="profile-edit-input" value="Los Estudiantes">
+                </div>
+            </div>
+
+            <div class="profile-actions-bar">
+                <div class="profile-actions-secondary">
+                    <button class="btn-outline" onclick="openModal('passwordResetModal')">Cambiar Contraseña</button>
+                    <button class="btn-logout" onclick="logoutAccount()">Cerrar Sesión</button>
+                </div>
+                <button class="btn-complete" onclick="saveProfile()">Guardar Cambios</button>
+            </div>
+
+            <!-- Gráfica de actividad de los últimos 10 días -->
+            <div class="profile-chart-card">
+                <h3>Tu progreso (últimos 10 días)</h3>
+                <div class="profile-chart" id="profileChartBars"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Cambiar contraseña -->
+<div id="passwordResetModal" class="modal">
+    <div class="modal-content" style="max-width:400px;">
+        <div class="modal-header">
+            <div><h2>🔐 Cambiar contraseña</h2></div>
+            <button class="modal-close" onclick="closeModal('passwordResetModal')"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+            <div class="profile-field" style="margin-bottom:.8rem;">
+                <span class="profile-field-label">Contraseña actual</span>
+                <input type="password" id="pwdCurrent" class="profile-edit-input"
+                    placeholder="Contraseña actual">
+            </div>
+            <div class="profile-field" style="margin-bottom:.8rem;">
+                <span class="profile-field-label">Nueva contraseña</span>
+                <input type="password" id="pwdNew" class="profile-edit-input"
+                    placeholder="Nueva contraseña">
+            </div>
+            <div class="profile-field" style="margin-bottom:.8rem;">
+                <span class="profile-field-label">Confirmar nueva contraseña</span>
+                <input type="password" id="pwdConfirm" class="profile-edit-input"
+                    placeholder="Repite la nueva contraseña">
+            </div>
+            <p id="pwdError" style="color:#f87171;font-size:.85rem;display:none;margin-bottom:.5rem;"></p>
+            <div class="modal-footer" style="padding:0;background:transparent;border:none;margin-top:1rem;">
+                <button class="btn-timeout" onclick="closeModal('passwordResetModal')">Cancelar</button>
+                <button class="btn-complete" onclick="changePassword()">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Historial completo del piso -->
+<div id="fullHistoryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div><h2>📋 Historial del Piso Completo</h2><p class="modal-subtitle">Todas las tareas completadas</p></div>
+            <button class="modal-close" onclick="closeModal('fullHistoryModal')"><span>&times;</span></button>
+        </div>
+        <div class="modal-body activity-list-modal" id="full-history-list"></div>
+    </div>
+</div>
+
+<!-- MODAL: Repartir puntos de rescate -->
+<div id="sharePointsModal" class="modal">
+    <div class="modal-content share-points-modal-content">
+        <div class="modal-header">
+            <div><h2>🤝 Repartir puntos del rescate</h2>
+                <p class="modal-subtitle" id="sharePointsSubtitle"></p>
+            </div>
+        </div>
+        <div class="modal-body">
+            <p class="share-copy">Selecciona qué porcentaje quieres ceder al compañero por pausar la tarea.</p>
+            <div class="share-options" id="shareOptionsGroup">
+                <button class="share-option active" data-share="0"  onclick="selectSharePercentage(0)">0%</button>
+                <button class="share-option"         data-share="25" onclick="selectSharePercentage(25)">25%</button>
+                <button class="share-option"         data-share="50" onclick="selectSharePercentage(50)">50%</button>
+            </div>
+            <div class="share-preview" id="sharePreview"></div>
+        </div>
+        <div class="modal-footer modal-actions">
+            <button class="btn-timeout" onclick="closeModal('sharePointsModal')">Cancelar</button>
+            <button class="btn-complete" onclick="confirmRescuedTaskCompletion()">Completar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Confirmación genérica -->
+<div id="confirmActionModal" class="modal">
+    <div class="modal-content" style="max-width:420px;">
+        <div class="modal-header">
+            <div><h2 id="confirmModalTitle">Confirmar Acción</h2></div>
+            <button class="modal-close" onclick="closeModal('confirmActionModal')"><span>&times;</span></button>
+        </div>
+        <div class="modal-body" style="text-align:center;padding:2rem 1.5rem;">
+            <p id="confirmModalText"    style="font-size:1.1rem;font-weight:600;color:var(--text-main);margin-bottom:.5rem;"></p>
+            <p id="confirmModalSubtext" style="font-size:.9rem;color:var(--text-muted);"></p>
+        </div>
+        <div class="modal-footer" style="justify-content:center;gap:1rem;background:transparent;border:none;padding-top:0;">
+            <button class="btn-timeout"  onclick="closeModal('confirmActionModal')" style="flex:1;justify-content:center;">Cancelar</button>
+            <button class="btn-complete" id="confirmModalBtn" style="flex:1;justify-content:center;">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Contenedor de toasts (notificaciones flotantes) -->
+<div id="toastContainer" class="toast-container"></div>
+
+
+<script>
+/* ============================================================
+   TASKRIDE — Script principal
+   Estructura:
+     1. Datos y constantes
+     2. Persistencia (localStorage)
+     3. Login / Logout
+     4. Inicialización de la app
+     5. Renderizado de UI
+     6. Lógica de tareas (completar, pausar, rescatar, reportar)
+     7. Perfil, contraseña, foto
+     8. Leaderboard y salud del piso
+     9. Tema (oscuro/claro)
+    10. Modales y utilidades
+============================================================ */
+
+
+/* ============================================================
+   1. DATOS Y CONSTANTES
+============================================================ */
+
+// ── VERSIÓN DE DEMO ──────────────────────────────────────────
+// Cambia este número para resetear todos los datos de la demo.
+// Cualquier otro cambio de código que no toque esta constante
+// dejará los datos guardados intactos al recargar.
+const DEMO_VERSION = 0;
+const DEMO_VERSION_KEY = 'taskride.demoVersion';
+
+/** Borra todos los datos del localStorage si la versión de demo ha cambiado */
+function checkDemoVersion() {
+    const stored = parseInt(localStorage.getItem(DEMO_VERSION_KEY) || '0', 10);
+    if (stored !== DEMO_VERSION) {
+        // Nueva versión → limpiar todo menos el tema
+        const theme = localStorage.getItem('taskride.theme');
+        localStorage.clear();
+        if (theme) localStorage.setItem('taskride.theme', theme);
+        localStorage.setItem(DEMO_VERSION_KEY, String(DEMO_VERSION));
+        console.info(`[TaskRide] Demo reseteada a versión ${DEMO_VERSION}`);
+    }
+}
+
+// Usuarios registrados con contraseñas y datos de demo
+const USERS_DB = {
+    'Jesus': {
+        password:    'jesus123',
+        displayName: 'Jesús García',
+        email:       'jesus@piso.com',
+        // Tareas iniciales de Jesús (distintas a las de Ricardo)
+        myTasks: [
+            { id:'j1', name:'Sacar la basura y reciclaje', meta:'Hoy (antes de 22:00)', points:1,  icon:'🗑️', urgency:'urgent', difficulty:'easy',   isPaused:false, subtasks:[] },
+            { id:'j2', name:'Fregar todos los platos',      meta:'Para mañana',          points:5,  icon:'🍽️', urgency:'medium', difficulty:'medium',  isPaused:false, subtasks:[] },
+            { id:'j3', name:'Limpieza a fondo del baño',    meta:'Quedan 4 días',        points:12, icon:'🧽', urgency:'low',    difficulty:'hard',    isPaused:false, subtasks:[] }
+        ],
+        completedTasks: [
+            { id:'jc1', name:'Aspirar el salón',       points:8,  shared:0, date:new Date(Date.now()-3*864e5).toISOString(), canUndo:false },
+            { id:'jc2', name:'Limpiar la nevera',       points:10, shared:0, date:new Date(Date.now()-7*864e5).toISOString(), canUndo:false }
+        ],
+        tokens:  2,
+        wallet:  18,
+        score:   18,
+        profilePic: null,
+        floorName: 'Los Estudiantes'
+    },
+    'Ricardo': {
+        password:    'ricardo123',
+        displayName: 'Ricardo Martínez',
+        email:       'ricardo@piso.com',
+        // Tareas iniciales de Ricardo (distintas a las de Jesús)
+        myTasks: [
+            { id:'r1', name:'Comprar productos de limpieza', meta:'Hoy (antes de las 20:00)', points:3,  icon:'🛒', urgency:'urgent', difficulty:'easy',   isPaused:false, subtasks:[] },
+            { id:'r2', name:'Pasar el aspirador por pasillos', meta:'Esta semana',            points:7,  icon:'🧹', urgency:'medium', difficulty:'medium',  isPaused:false, subtasks:[] },
+            { id:'r3', name:'Limpiar cristales del salón',     meta:'Quedan 5 días',          points:10, icon:'🪟', urgency:'low',    difficulty:'hard',    isPaused:false, subtasks:[] }
+        ],
+        completedTasks: [
+            { id:'rc1', name:'Cocinar para todos (semana)', points:22, shared:0, date:new Date(Date.now()-2*864e5).toISOString(), canUndo:false },
+            { id:'rc2', name:'Quitar el polvo general',     points:12, shared:0, date:new Date(Date.now()-6*864e5).toISOString(), canUndo:false }
+        ],
+        tokens:  2,
+        wallet:  34,
+        score:   34,
+        profilePic: null,
+        floorName: 'Los Estudiantes'
+    }
+};
+
+// Estado compartido del piso (persiste entre sesiones)
+// Contiene puntuaciones, historial y tareas pausadas visibles para todos
+const SHARED_STATE_KEY = 'taskride.shared';
+
+// Estado local de la sesión activa
+let activeUser = null;  // username (clave en USERS_DB)
+let userData   = null;  // referencia a los datos del usuario activo
+
+const TOKEN_COST  = 50;
+const VOTES_NEEDED = 3;
+
+// Variables de UI temporales
+let pendingConfirmCallback = null;
+let pendingRescueCard      = null;
+let selectedShare          = 0;
+const undoTimers           = {};
+
+
+/* ============================================================
+   2. PERSISTENCIA (localStorage)
+   - 'taskride.shared'        → estado del piso (scores, historial, pausadas)
+   - 'taskride.user.<name>'   → datos privados de cada usuario
+   - 'taskride.session'       → usuario activo
+   - 'taskride.theme'         → tema claro/oscuro
+============================================================ */
+
+/** Lee el estado compartido del piso (puntos, historial, tareas pausadas) */
+function loadSharedState() {
+    try {
+        const raw = localStorage.getItem(SHARED_STATE_KEY);
+        if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    // Estado inicial si nunca se ha guardado
+    return {
+        // Puntuaciones del ranking (username → puntos)
+        scores: { 'Jesus': 18, 'Ricardo': 34, 'Carlos': 15, 'Laura': 12, 'David': 9 },
+        // Historial del piso (entradas de tareas completadas)
+        floorHistory: [
+            { id:'f1', owner:'Ricardo', name:'Cocinar para todos (semana)', points:22, icon:'R', votes:0, date:new Date().toISOString() },
+            { id:'f2', owner:'Jesus',   name:'Aspirar el salón',            points:8,  icon:'J', votes:0, date:new Date().toISOString() },
+            { id:'f3', owner:'Carlos',  name:'Fregar todos los platos',     points:15, icon:'C', votes:2, date:new Date().toISOString() },
+            { id:'f4', owner:'Laura',   name:'Quitar el polvo general',     points:12, icon:'L', votes:0, date:new Date().toISOString() },
+            { id:'f5', owner:'David',   name:'Ordenar el salón',            points:9,  icon:'D', votes:0, date:new Date().toISOString() }
+        ],
+        // Tareas pausadas visibles para rescatar
+        pausedByOthers: [],
+        // Nombre del piso
+        floorName: 'Los Estudiantes'
+    };
+}
+
+/** Guarda el estado compartido */
+function saveSharedState(state) {
+    localStorage.setItem(SHARED_STATE_KEY, JSON.stringify(state));
+}
+
+/** Lee los datos privados de un usuario */
+function loadUserData(username) {
+    try {
+        const raw = localStorage.getItem(`taskride.user.${username}`);
+        if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    // Primera vez: clonar datos de demo
+    return JSON.parse(JSON.stringify(USERS_DB[username]));
+}
+
+/** Guarda los datos privados del usuario activo */
+function saveUserData() {
+    if (!activeUser || !userData) return;
+    localStorage.setItem(`taskride.user.${activeUser}`, JSON.stringify(userData));
+}
+
+/** Estado compartido en memoria (se carga al login) */
+let sharedState = null;
+
+
+/* ============================================================
+   3. LOGIN / LOGOUT
+============================================================ */
+
+/** Intento de login con validación de credenciales */
+function doLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errEl    = document.getElementById('loginError');
+
+    if (!USERS_DB[username] || USERS_DB[username].password !== password) {
+        errEl.style.display = 'block';
+        return;
+    }
+
+    errEl.style.display = 'none';
+    localStorage.setItem('taskride.session', username);
+    startSession(username);
+}
+
+/** Permite confirmar login con Enter */
+document.addEventListener('keydown', e => {
+    if (document.getElementById('loginScreen').style.display !== 'none' && e.key === 'Enter')
+        doLogin();
+});
+
+/** Inicia la sesión para un usuario ya validado */
+function startSession(username) {
+    activeUser  = username;
+    userData    = loadUserData(username);
+    sharedState = loadSharedState();
+
+    // Mostrar app, ocultar login
+    document.getElementById('loginScreen').style.display  = 'none';
+    document.getElementById('appScreen').style.display    = 'block';
+
+    initApp();
+}
+
+/** Cierra sesión y vuelve al login */
+function logoutAccount() {
+    saveUserData();
+    saveSharedState(sharedState);
+
+    // Limpiar estado en memoria
+    activeUser  = null;
+    userData    = null;
+    sharedState = null;
+
+    localStorage.removeItem('taskride.session');
+
+    // Cerrar TODOS los modales instantáneamente
+    document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+
+    // Eliminar todos los toasts activos
+    clearAllToasts();
+
+    // Limpiar campos de login
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginPassword').value = '';
+
+    document.getElementById('appScreen').style.display   = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+}
+
+/** Restaurar sesión si ya había una activa (recarga de página) */
+function tryRestoreSession() {
+    const saved = localStorage.getItem('taskride.session');
+    if (saved && USERS_DB[saved]) {
+        startSession(saved);
+    } else {
+        document.getElementById('loginScreen').style.display = 'flex';
+    }
+}
+
+
+/* ============================================================
+   4. INICIALIZACIÓN DE LA APP
+   Se llama cada vez que un usuario hace login.
+============================================================ */
+function initApp() {
+    initTheme();
+    updateNavProfile();
+    updateFloorName();
+    calculateOverallHealth();
+    updateTimer();
+    setInterval(updateTimer, 60000);
+    renderMyTasks();
+    updateLeaderboard();
+    updateTokensUI();
+    switchTab('my-tasks');
+
+    // Mostrar ayuda la primera vez que el usuario entra (por usuario)
+    const firstVisitKey = `taskride.firstVisit.${activeUser}`;
+    if (!localStorage.getItem(firstVisitKey)) {
+        localStorage.setItem(firstVisitKey, 'true');
+        setTimeout(() => openModal('helpModal'), 400);
+    }
+}
+
+/** Actualiza la barra de navegación con el nombre y avatar del usuario */
+function updateNavProfile() {
+    const shortName = userData.displayName.split(' ')[0];
+    document.getElementById('profileNameDisplay').textContent = shortName;
+
+    // Avatar: foto de perfil o inicial
+    const initials = shortName[0].toUpperCase();
+    document.querySelectorAll('.current-user-avatar').forEach(el => {
+        if (userData.profilePic) {
+            el.innerHTML = '';
+            el.style.backgroundImage    = `url(${userData.profilePic})`;
+            el.style.backgroundSize     = 'cover';
+            el.style.backgroundPosition = 'center';
+        } else {
+            el.style.backgroundImage = '';
+            el.textContent = initials;
+        }
+    });
+}
+
+/** Actualiza el nombre del piso en la barra de navegación */
+function updateFloorName() {
+    document.getElementById('navFloorName').textContent =
+        userData.floorName || sharedState.floorName || 'Los Estudiantes';
+}
+
+
+/* ============================================================
+   5. RENDERIZADO DE UI
+============================================================ */
+
+/** Renderiza "Mis Tareas" (activas + pausadas del usuario actual) */
+function renderMyTasks() {
+    const list   = document.getElementById('my-tasks-list');
+    const active = userData.myTasks.filter(t => !t.isPaused);
+    const paused = userData.myTasks.filter(t =>  t.isPaused);
+
+    list.innerHTML = [...active, ...paused].map(task => {
+        const isP      = task.isPaused;
+        const canPause = task.difficulty === 'hard' && !task.rescued;
+
+        // Botón pausar/reanudar (solo en tareas difíciles propias)
+        const pauseBtn = canPause ? `
+            <button class="btn-timeout${isP ? ' btn-timeout--resume' : ''}"
+                onclick="togglePause('${task.id}')"
+                title="${isP ? 'Reanudar tarea' : 'Gastar 1 comodín para pausar'}">
+                ${isP
+                    ? `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span>Reanudar</span>`
+                    : `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg><span>Pausar</span>`
+                }
+            </button>` : '';
+
+        // Subtareas (si existen) o botón para sugerirlas
+        let subtasksHTML = '';
+        if (task.subtasks?.length > 0) {
+            subtasksHTML = `<div class="subtasks-container">
+                ${task.subtasks.map(st => `
+                    <label class="subtask-label">
+                        <input type="checkbox" ${st.done ? 'checked' : ''}
+                            onchange="toggleSubtask('${task.id}','${st.id}')" ${isP ? 'disabled' : ''}>
+                        <span>${st.name}</span>
+                    </label>`).join('')}
+            </div>`;
+        } else if (!isP && (task.difficulty === 'hard' || task.difficulty === 'medium')) {
+            subtasksHTML = `<button class="btn-suggest" onclick="suggestSubtasks('${task.id}')">🪄 Sugerir división en subtareas</button>`;
         }
 
-        function updateTokensUI() { document.getElementById('tokenCount').textContent = appState.tokens; }
+        return `
+        <article class="task-card ${task.urgency}${isP ? ' paused-task' : ''}" data-id="${task.id}">
+            <div class="task-info">
+                <div class="task-icon">${task.icon}</div>
+                <div class="task-details">
+                    <h3>${task.name}</h3>
+                    <p class="task-meta">${isP ? '⏸️ EN PAUSA · Los puntos se van degradando…' : task.meta}</p>
+                    ${subtasksHTML}
+                </div>
+            </div>
+            <div class="task-actions">
+                <div class="points-reward">
+                    <span class="pts-icon">⭐</span>
+                    <div>
+                        <span class="pts-number">+${task.points}</span>
+                        <span class="pts-label">Puntos</span>
+                    </div>
+                </div>
+                <div class="task-buttons">
+                    <div class="task-buttons-left">${pauseBtn}</div>
+                    <button class="btn-checkbox" onclick="completeTask('${task.id}')"
+                        ${isP ? 'disabled' : ''} title="Marcar completada">
+                        <div class="chk-circle">
+                            <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </article>`;
+    }).join('') || '<div class="empty-state"><p>✅ ¡No tienes tareas pendientes! Eres un crack.</p></div>';
 
-        function togglePause(id) {
-            const task = appState.myTasks.find(t => t.id === id);
-            if(task) {
-                if(!task.isPaused) {
-                    if(appState.tokens <= 0) { alert('No te quedan comodines esta rotación.'); return; }
-                    appState.tokens--;
-                    task.isPaused = true;
-                } else {
-                    task.isPaused = false;
-                    appState.tokens++; 
+    document.getElementById('tabSubtitle').innerHTML =
+        `📋 Tienes <strong>${active.length} tareas</strong> activas. ¡Complétalas para ganar puntos!`;
+}
+
+/** Renderiza la pestaña "Tareas Pausadas" (de otros compañeros para rescatar) */
+function renderPausedTab() {
+    const container = document.getElementById('paused-tasks-list');
+    const others    = sharedState.pausedByOthers.filter(t => t.pausedBy !== activeUser);
+
+    if (!others.length) {
+        container.innerHTML = '<div class="empty-state"><p>📭 Ningún compañero tiene tareas en pausa ahora mismo.</p></div>';
+        return;
+    }
+
+    container.innerHTML = others.map(pt => `
+        <article class="task-card medium">
+            <div class="task-info">
+                <div class="task-icon">${pt.icon}</div>
+                <div class="task-details">
+                    <h3>${pt.name}</h3>
+                    <p class="task-meta">⏸️ Pausada por <strong>${pt.pausedBy}</strong> · ${pt.points} pts disponibles</p>
+                </div>
+            </div>
+            <div class="task-actions">
+                <div class="points-reward">
+                    <span class="pts-icon">⭐</span>
+                    <div><span class="pts-number">+${pt.points}</span><span class="pts-label">Extras</span></div>
+                </div>
+                <button class="btn-rescue" onclick="rescueTask('${pt.id}')">🆘 Rescatar</button>
+            </div>
+        </article>`).join('');
+}
+
+/** Renderiza el "Historial del Piso" con opción de reportar */
+function renderHistoryTab() {
+    const container     = document.getElementById('floor-history-list');
+    const fullContainer = document.getElementById('full-history-list');
+
+    // El usuario ve las tareas de sus compañeros, no las suyas propias
+    const history = sharedState.floorHistory.filter(t => t.owner !== activeUser);
+
+    if (!history.length) {
+        container.innerHTML = '<div class="empty-state"><p>📋 Tus compañeros aún no han completado ninguna tarea.</p></div>';
+        document.getElementById('history-show-more').style.display = 'none';
+        return;
+    }
+
+    // Votos ya emitidos por el usuario actual (guardados en userData)
+    const myVotes = new Set(userData.myVotes || []);
+
+    const renderItems = items => items.map(t => {
+        const alreadyVoted = myVotes.has(t.id);
+        const votesLeft    = Math.max(0, VOTES_NEEDED - t.votes);
+        const isRevoked    = t.votes >= VOTES_NEEDED;
+
+        // Icono/avatar del propietario
+        const ownerInitial = t.owner[0].toUpperCase();
+
+        return `
+        <div class="history-floor-item${isRevoked ? ' history-floor-item--revoked' : ''}">
+            <div class="activity-avatar">${ownerInitial}</div>
+            <div class="activity-details">
+                <p class="activity-text"><strong>${t.owner}</strong> completó <em>${t.name}</em></p>
+                ${isRevoked
+                    ? `<p class="vote-badge vote-badge--revoked">⛔ Tarea revocada por votación</p>`
+                    : t.votes > 0
+                        ? `<p class="vote-badge vote-badge--active">⚖️ En votación · ${t.votes}/${VOTES_NEEDED} votos · Faltan ${votesLeft}</p>`
+                        : ''
                 }
+            </div>
+            <div class="activity-points">+${isRevoked ? 0 : t.points} pts</div>
+            ${!isRevoked && !alreadyVoted && t.owner !== activeUser
+                ? `<button class="btn-audit-red" onclick="auditTask('${t.id}')">Reportar</button>`
+                : !isRevoked && alreadyVoted
+                    ? `<span class="vote-sent-label">Voto enviado ✓</span>`
+                    : ''
+            }
+        </div>`;
+    }).join('');
+
+    container.innerHTML = renderItems(history.slice(0, 4));
+    document.getElementById('history-show-more').style.display =
+        history.length > 4 ? 'block' : 'none';
+    if (fullContainer) fullContainer.innerHTML = renderItems(history);
+}
+
+/** Renderiza "Mis Completadas" con resumen y opción de restaurar */
+function renderCompletedTab() {
+    const list     = document.getElementById('completed-tasks-list');
+    const tasks    = userData.completedTasks;
+    const totalPts = tasks.reduce((a, t) => a + t.points, 0);
+
+    document.getElementById('completedTasksSummary').innerHTML =
+        `<p><strong>${tasks.length}</strong> tareas completadas</p>
+         <p><strong>${totalPts}</strong> puntos aportados por ti</p>`;
+
+    list.innerHTML = tasks.map(t => `
+        <div class="history-floor-item"
+            style="background:var(--status-easy-bg);border-color:var(--status-easy-text);">
+            <div class="activity-avatar">✅</div>
+            <div class="activity-details">
+                <p class="activity-text"><strong>${t.name}</strong></p>
+                ${t.shared > 0
+                    ? `<p class="activity-time" style="color:var(--primary);">Compartiste ${t.shared} pts</p>`
+                    : ''}
+            </div>
+            <div class="activity-points" style="color:var(--status-easy-text);display:flex;align-items:center;gap:.5rem;white-space:nowrap;">
+                +${t.points} pts
+                ${t.canUndo
+                    ? `<button class="btn-restore" onclick="undoTask('${t.id}')">Restaurar ⏱️</button>`
+                    : ''}
+            </div>
+        </div>`).join('') || '<div class="empty-state"><p>📭 Aún no has completado ninguna tarea.</p></div>';
+}
+
+/** Gráfica de barras de actividad en el perfil */
+function renderProfileChart() {
+    const chart  = document.getElementById('profileChartBars');
+    if (!chart) return;
+    const counts = new Array(10).fill(0);
+    const today  = new Date(); today.setHours(0, 0, 0, 0);
+
+    userData.completedTasks.forEach(task => {
+        const d = new Date(task.date); d.setHours(0, 0, 0, 0);
+        const diff = Math.floor((today - d) / 864e5);
+        if (diff >= 0 && diff < 10) counts[9 - diff]++;
+    });
+
+    const max = Math.max(...counts, 1);
+    chart.innerHTML = counts.map((val, i) => {
+        const lbl = new Date(today); lbl.setDate(today.getDate() - (9 - i));
+        return `<div class="chart-col" title="${val} tareas el ${lbl.getDate()}/${lbl.getMonth()+1}">
+                    <div class="chart-bar" style="height:${(val/max)*100}%"></div>
+                    <span class="chart-val">${val}</span>
+                </div>`;
+    }).join('');
+}
+
+
+/* ============================================================
+   6. LÓGICA DE TAREAS
+============================================================ */
+
+/** Cambia la pestaña activa y re-renderiza su contenido */
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content, .tab-btn').forEach(el => el.classList.remove('active'));
+    document.querySelector(`.tab-content[data-tab="${tabId}"]`).classList.add('active');
+    document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+
+    const titles = {
+        'my-tasks':     'Mis Tareas Pendientes',
+        'paused-tasks': 'Tareas Pausadas y Rescates',
+        'floor-history':'Historial del Piso',
+        'my-completed': 'Mis Completadas'
+    };
+    document.getElementById('tabTitle').textContent = titles[tabId];
+    document.getElementById('tokensBadge').style.display = tabId === 'my-tasks' ? '' : 'none';
+
+    if (tabId === 'my-tasks')      renderMyTasks();
+    if (tabId === 'paused-tasks')  renderPausedTab();
+    if (tabId === 'floor-history') renderHistoryTab();
+    if (tabId === 'my-completed')  renderCompletedTab();
+}
+
+/** Genera subtareas sugeridas para una tarea */
+function suggestSubtasks(taskId) {
+    const task = userData.myTasks.find(t => t.id === taskId);
+    if (!task) return;
+    const n = task.name.toLowerCase();
+    let list = n.includes('baño')
+        ? ['Limpiar inodoro y lavabo', 'Fregar el suelo', 'Limpiar el espejo']
+        : (n.includes('cocina') || n.includes('plat'))
+            ? ['Vaciar lo limpio', 'Meter lo sucio', 'Pasar bayeta a la encimera']
+            : ['Preparar utensilios', 'Realizar limpieza principal', 'Recoger zona'];
+    task.subtasks = list.map((name, i) => ({ id:`s_${Date.now()}_${i}`, name, done: false }));
+    saveUserData();
+    renderMyTasks();
+}
+
+/** Marca/desmarca una subtarea */
+function toggleSubtask(taskId, subtaskId) {
+    const task = userData.myTasks.find(t => t.id === taskId);
+    const st   = task?.subtasks.find(s => s.id === subtaskId);
+    if (st) { st.done = !st.done; saveUserData(); }
+}
+
+/** Pausa o reanuda una tarea difícil del usuario */
+function togglePause(id) {
+    const task = userData.myTasks.find(t => t.id === id);
+    if (!task) return;
+
+    if (!task.isPaused) {
+        // --- PAUSAR ---
+        if (userData.tokens <= 0) {
+            openConfirmModal(
+                '🎟️ Sin Comodines',
+                'No te quedan comodines para pausar tareas.',
+                `Puedes comprar un comodín gastando ${TOKEN_COST} puntos en la tienda.`,
+                'Ir a la tienda', false,
+                () => openModal('shopModal')
+            );
+            return;
+        }
+        openConfirmModal(
+            '⏸️ Pausar Tarea',
+            `¿Seguro que quieres pausar "${task.name}"?`,
+            `Gastarás 1 comodín de forma permanente. Los puntos (${task.points} pts) se irán degradando cada día que la tarea permanezca pausada. Tus compañeros podrán verla y rescatarla.`,
+            'Sí, pausar tarea', true,
+            () => {
+                userData.tokens--;
+                task.isPaused = true;
+
+                // La tarea aparece en el panel compartido para que otros la puedan rescatar
+                sharedState.pausedByOthers.push({
+                    id:       task.id,
+                    name:     task.name,
+                    icon:     task.icon,
+                    points:   task.points,
+                    pausedBy: activeUser
+                });
+
+                saveUserData();
+                saveSharedState(sharedState);
                 updateTokensUI();
                 renderMyTasks();
                 calculateOverallHealth();
+                showToast(`⏸️ Tarea pausada. Tus compañeros pueden rescatarla.`);
             }
+        );
+    } else {
+        // --- REANUDAR (el comodín ya está gastado, no se recupera) ---
+        task.isPaused = false;
+
+        // Quitar del panel compartido
+        sharedState.pausedByOthers = sharedState.pausedByOthers.filter(p => p.id !== task.id);
+
+        saveUserData();
+        saveSharedState(sharedState);
+        renderMyTasks();
+        calculateOverallHealth();
+        showToast(`▶️ Tarea reanudada. ¡A por ella!`);
+    }
+}
+
+/** Inicia el flujo de rescate de una tarea de otro usuario */
+function rescueTask(id) {
+    const task = sharedState.pausedByOthers.find(t => t.id === id);
+    if (!task) return;
+
+    openConfirmModal(
+        '🤝 Rescatar Tarea',
+        `¿Quieres encargarte de "${task.name}"?`,
+        `Ganarás ${task.points} pts extra. Cuando la completes podrás repartir puntos con ${task.pausedBy}.`,
+        'Sí, encargarme', false,
+        () => {
+            // Eliminar del panel compartido
+            sharedState.pausedByOthers = sharedState.pausedByOthers.filter(p => p.id !== id);
+            saveSharedState(sharedState);
+
+            // Añadir a mis tareas como tarea rescatada
+            userData.myTasks.unshift({
+                id:       `r_${Date.now()}`,
+                name:     task.name,
+                meta:     `Rescatada de ${task.pausedBy}`,
+                points:   task.points,
+                icon:     '🆘',
+                urgency:  'urgent',
+                difficulty: 'easy',
+                isPaused: false,
+                rescued:  true,
+                originalOwner: task.pausedBy,
+                subtasks: []
+            });
+
+            saveUserData();
+            calculateOverallHealth();
+            switchTab('my-tasks');
+            showToast(`🆘 ¡Rescataste la tarea de ${task.pausedBy}!`);
         }
+    );
+}
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content, .tab-btn').forEach(el => el.classList.remove('active'));
-            document.querySelector(`.tab-content[data-tab="${tabId}"]`).classList.add('active');
-            document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+/** Completa una tarea: si fue rescatada, pregunta cómo repartir los puntos */
+function completeTask(id) {
+    const idx  = userData.myTasks.findIndex(t => t.id === id);
+    const task = userData.myTasks[idx];
 
-            const titles = {
-                'my-tasks': 'Mis Tareas Pendientes',
-                'paused-tasks': 'Tareas Pausadas y Rescates',
-                'floor-history': 'Historial del Piso',
-                'my-completed': 'Mis Completadas'
-            };
-            document.getElementById('tabTitle').textContent = titles[tabId];
-            document.getElementById('tokensBadge').style.display = (tabId === 'my-tasks') ? 'block' : 'none';
+    if (task.rescued) {
+        // Mostrar modal de reparto de puntos
+        pendingRescueCard = { task, index: idx };
+        selectSharePercentage(0);
+        document.getElementById('sharePointsSubtitle').textContent =
+            `${task.name} · ${task.points} pts totales`;
+        openModal('sharePointsModal');
+    } else {
+        finalizeTask(idx, task.points, 0, null);
+    }
+}
 
-            if(tabId === 'my-tasks') renderMyTasks();
-            if(tabId === 'paused-tasks') renderPausedTab();
-            if(tabId === 'floor-history') renderHistoryTab();
-            if(tabId === 'my-completed') renderCompletedTab();
-        }
+/** Actualiza la vista previa del reparto de puntos */
+function selectSharePercentage(percent) {
+    selectedShare = percent;
+    document.querySelectorAll('.share-option').forEach(b =>
+        b.classList.toggle('active', parseInt(b.dataset.share) === percent));
 
-        function renderPausedTab() {
-            const container = document.getElementById('paused-tasks-list');
-            if (appState.pausedByOthers.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>📭 Ningún compañero tiene tareas en pausa.</p></div>';
-                return;
-            }
-            container.innerHTML = appState.pausedByOthers.map(pt => `
-                <article class="task-card medium">
-                    <div class="task-info">
-                        <div class="task-icon">${pt.icon}</div>
-                        <div class="task-details">
-                            <h3>${pt.name}</h3><p class="task-meta">Pausada por ${pt.owner}</p>
-                        </div>
-                    </div>
-                    <div class="task-actions">
-                        <div class="points-reward">
-                            <span class="pts-icon">⭐</span><div><span class="pts-number">+${pt.points}</span><span class="pts-label">Extras</span></div>
-                        </div>
-                        <button class="btn-complete" style="background-color:#10b981;" onclick="rescueTask('${pt.id}')">Rescatar</button>
-                    </div>
-                </article>
-            `).join('');
-        }
-
-        function completeTask(id) {
-            const taskIndex = appState.myTasks.findIndex(t => t.id === id);
-            const task = appState.myTasks[taskIndex];
-
-            if (task.rescued) {
-                appState.pendingRescueCard = { task, index: taskIndex };
-                selectSharePercentage(0);
-                document.getElementById('sharePointsSubtitle').textContent = `${task.name} • ${task.points} pts totales`;
-                openModal('sharePointsModal');
-            } else {
-                finalizeTask(taskIndex, task.points, 0);
-            }
-        }
-
-        function selectSharePercentage(percent) {
-            appState.selectedShare = percent;
-            document.querySelectorAll('.share-option').forEach(b => b.classList.toggle('active', parseInt(b.dataset.share) === percent));
-            
-            if (appState.pendingRescueCard) {
-                const total = appState.pendingRescueCard.task.points;
-                const shared = Math.round(total * (percent / 100));
-                document.getElementById('sharePreview').innerHTML = `
-                    <div class="share-preview-grid">
-                        <div class="share-preview-card share-preview-card--mine">
-                            <span class="share-preview-label">Tú recibes</span><span class="share-preview-value">${total - shared} pts</span>
-                        </div>
-                        <div class="share-preview-card share-preview-card--other">
-                            <span class="share-preview-label">${appState.pendingRescueCard.task.owner} recibe</span><span class="share-preview-value">${shared} pts</span>
-                        </div>
-                    </div>`;
-            }
-        }
-
-        function confirmRescuedTaskCompletion() {
-            if (!appState.pendingRescueCard) return;
-            const total = appState.pendingRescueCard.task.points;
-            const shared = Math.round(total * (appState.selectedShare / 100));
-            finalizeTask(appState.pendingRescueCard.index, total - shared, shared);
-            closeModal('sharePointsModal');
-        }
-
-        // --- ACTUALIZADO: RENDERIZAR PESTAÑA COMPLETADAS CON BOTÓN RESTAURAR ---
-        function renderCompletedTab() {
-            const list = document.getElementById('completed-tasks-list');
-            const totalPts = appState.completedTasks.reduce((acc, t) => acc + t.points, 0);
-            document.getElementById('completedTasksSummary').innerHTML = `<p><strong>${appState.completedTasks.length}</strong> tareas completadas</p><p><strong>${totalPts}</strong> puntos aportados por ti</p>`;
-            list.innerHTML = appState.completedTasks.map(t => {
-                const restoreBtnHTML = t.canUndo ? `<button class="btn-restore" onclick="undoTask('${t.id}')">Restaurar ⏱️</button>` : '';
-                return `
-                <div class="history-floor-item" style="background:var(--status-easy-bg); border-color:var(--status-easy-text);">
-                    <div class="activity-avatar">✅</div>
-                    <div class="activity-details">
-                        <p class="activity-text"><strong>${t.name}</strong></p>
-                        ${t.shared > 0 ? `<p class="activity-time" style="color:var(--primary);">Compartiste ${t.shared} pts</p>` : ''}
-                    </div>
-                    <div class="activity-points" style="color:var(--status-easy-text); display:flex; align-items:center; gap:0.5rem; white-space:nowrap;">
-                        +${t.points} pts
-                        ${restoreBtnHTML}
-                    </div>
+    if (pendingRescueCard) {
+        const total  = pendingRescueCard.task.points;
+        const shared = Math.round(total * (percent / 100));
+        document.getElementById('sharePreview').innerHTML = `
+            <div class="share-preview-grid">
+                <div class="share-preview-card share-preview-card--mine">
+                    <span class="share-preview-label">Tú recibes</span>
+                    <span class="share-preview-value">${total - shared} pts</span>
                 </div>
-            `}).join('');
-        }
-
-        function renderHistoryTab() {
-            const container = document.getElementById('floor-history-list');
-            const fullContainer = document.getElementById('full-history-list');
-            if (appState.floorHistory.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>📋 El historial está vacío</p></div>';
-                document.getElementById('history-show-more').style.display = 'none';
-                return;
-            }
-
-            const renderItems = (items) => items.map(t => `
-                <div class="history-floor-item">
-                    <div class="activity-avatar">${t.icon}</div>
-                    <div class="activity-details">
-                        <p class="activity-text"><strong>${t.owner}</strong> completó <em>${t.name}</em></p>
-                    </div>
-                    <div class="activity-points">+${t.points} pts</div>
-                    <button class="btn-audit-red" onclick="auditTask('${t.id}')">Reportar</button>
+                <div class="share-preview-card share-preview-card--other">
+                    <span class="share-preview-label">${pendingRescueCard.task.originalOwner} recibe</span>
+                    <span class="share-preview-value">${shared} pts</span>
                 </div>
-            `).join('');
+            </div>`;
+    }
+}
 
-            container.innerHTML = renderItems(appState.floorHistory.slice(0, 4));
-            document.getElementById('history-show-more').style.display = appState.floorHistory.length > 4 ? 'block' : 'none';
-            if(fullContainer) fullContainer.innerHTML = renderItems(appState.floorHistory);
+/** Confirma la finalización de una tarea rescatada con reparto de puntos */
+function confirmRescuedTaskCompletion() {
+    if (!pendingRescueCard) return;
+    const total   = pendingRescueCard.task.points;
+    const shared  = Math.round(total * (selectedShare / 100));
+    finalizeTask(pendingRescueCard.index, total - shared, shared, pendingRescueCard.task.originalOwner);
+    closeModal('sharePointsModal');
+    pendingRescueCard = null;
+}
+
+/**
+ * Finaliza una tarea: la mueve a completadas, suma puntos, actualiza el ranking.
+ * @param {number} index        - índice en myTasks
+ * @param {number} gainedPoints - puntos que gana el usuario activo
+ * @param {number} sharedPoints - puntos que se comparten con otro usuario
+ * @param {string|null} sharedWith - username del que recibe puntos compartidos
+ */
+function finalizeTask(index, gainedPoints, sharedPoints, sharedWith) {
+    const task = userData.myTasks[index];
+    userData.myTasks.splice(index, 1);
+
+    // Sumar puntos al usuario activo
+    userData.wallet                    += gainedPoints;
+    userData.score                     += gainedPoints;
+    sharedState.scores[activeUser]     = (sharedState.scores[activeUser] || 0) + gainedPoints;
+
+    // Sumar puntos compartidos al otro usuario
+    if (sharedWith && sharedPoints > 0) {
+        sharedState.scores[sharedWith] = (sharedState.scores[sharedWith] || 0) + sharedPoints;
+        // Si el otro usuario tiene datos cargados, actualizarlos también
+        const otherData = loadUserData(sharedWith);
+        if (otherData) {
+            otherData.wallet += sharedPoints;
+            otherData.score  += sharedPoints;
+            localStorage.setItem(`taskride.user.${sharedWith}`, JSON.stringify(otherData));
         }
+    }
 
-        function updateLeaderboard() {
-            const sorted = Object.entries(appState.users).sort((a,b) => b[1]-a[1]);
-            const html = sorted.slice(0, 6).map(([name, pts], i) => {
-                const isMe = name === activeUser;
-                const topClass = isMe ? 'current-user' : ''; 
-                const avatarClass = isMe ? 'current-user-avatar' : '';
-                const title = isMe ? `${name} (Tú)` : name;
-                const sub = isMe ? (i===0 ? 'Vas liderando 🚀' : '¡A por el líder!') : (subtitles[name] || 'En progreso');
-                
-                let lastTasks = isMe ? appState.completedTasks.slice(0, 3).map(t => t.name) : appState.floorHistory.filter(t => t.owner === name).slice(0, 3).map(t => t.name);
-                const tooltipHtml = lastTasks.length > 0 ? lastTasks.map(t => `• ${t}`).join('<br>') : 'Aún no hay tareas';
+    // Añadir a historial personal
+    const historyId = `c_${Date.now()}`;
+    userData.completedTasks.unshift({
+        id:           historyId,
+        name:         task.name,
+        points:       gainedPoints,
+        shared:       sharedPoints,
+        sharedWith:   sharedWith,
+        date:         new Date().toISOString(),
+        originalTask: task,
+        canUndo:      true
+    });
 
-                return `
-                <div class="ranking-item ${topClass}">
-                    <div class="rank-user-info">
-                        <div class="rank-avatar ${avatarClass}">${avatars[name] || name.charAt(0)}</div>
-                        <div>
-                            <p class="rank-name">${title}</p>
-                            <p class="rank-subtitle">${sub}</p>
-                        </div>
-                    </div>
-                    <div class="rank-score"><span class="score-num">${pts}</span> pts</div>
-                    
-                    <div class="ranking-tooltip">
-                        <strong>Últimas tareas:</strong><br>
-                        ${tooltipHtml}
-                    </div>
-                </div>`;
-            }).join('');
+    // Añadir siempre al historial compartido del piso.
+    // El propio usuario no lo verá en su pestaña "Historial del Piso" (se filtra al renderizar),
+    // pero el resto de compañeros sí verán que la ha completado.
+    sharedState.floorHistory.unshift({
+        id:     historyId,
+        owner:  activeUser,
+        name:   task.name,
+        points: gainedPoints,
+        icon:   activeUser[0].toUpperCase(),
+        votes:  0,
+        date:   new Date().toISOString()
+    });
 
-            document.getElementById('compact-leaderboard').innerHTML = html;
-            applyProfilePicsToAvatars();
+    // Iniciar temporizador de deshacer (10 min)
+    undoTimers[historyId] = setTimeout(() => {
+        const ct = userData.completedTasks.find(t => t.id === historyId);
+        if (ct) ct.canUndo = false;
+        saveUserData();
+        if (document.querySelector('.tab-content[data-tab="my-completed"]')?.classList.contains('active'))
+            renderCompletedTab();
+    }, 10 * 60 * 1000);
+
+    saveUserData();
+    saveSharedState(sharedState);
+
+    showUndoToast(historyId, task.name, gainedPoints);
+    calculateOverallHealth();
+    renderMyTasks();
+    updateLeaderboard();
+    updateTokensUI();
+}
+
+/** Deshace una tarea completada recientemente (dentro de 10 minutos) */
+function undoTask(historyId) {
+    const index = userData.completedTasks.findIndex(t => t.id === historyId);
+    if (index === -1) return;
+    const ct = userData.completedTasks[index];
+    if (!ct.canUndo) {
+        showToast('⏰ Han pasado más de 10 minutos, esta acción ya es permanente.');
+        return;
+    }
+
+    document.getElementById(`toast-${historyId}`)?.remove();
+
+    // Revertir puntos del usuario activo
+    userData.wallet                  -= ct.points;
+    userData.score                   -= ct.points;
+    sharedState.scores[activeUser]   = Math.max(0, (sharedState.scores[activeUser] || 0) - ct.points);
+
+    // Revertir puntos compartidos
+    if (ct.sharedWith && ct.shared > 0) {
+        sharedState.scores[ct.sharedWith] =
+            Math.max(0, (sharedState.scores[ct.sharedWith] || 0) - ct.shared);
+        const otherData = loadUserData(ct.sharedWith);
+        if (otherData) {
+            otherData.wallet = Math.max(0, otherData.wallet - ct.shared);
+            otherData.score  = Math.max(0, otherData.score  - ct.shared);
+            localStorage.setItem(`taskride.user.${ct.sharedWith}`, JSON.stringify(otherData));
         }
+    }
 
-        function logoutAccount() {
-            alert('Sesión cerrada. (Simulación)');
-            closeModal('profileModal');
-        }
+    // Quitar del historial compartido del piso
+    sharedState.floorHistory = sharedState.floorHistory.filter(t => t.id !== historyId);
 
-        function saveProfile() {
-            const newFullName = document.getElementById('editProfileName').value.trim();
-            const newShortName = newFullName.split(' ')[0] || 'Usuario';
-            const newFloor = document.getElementById('editFloorName').value.trim() || 'Los Estudiantes';
-            
-            document.getElementById('navFloorName').textContent = newFloor;
+    userData.completedTasks.splice(index, 1);
+    if (ct.originalTask) userData.myTasks.unshift(ct.originalTask);
+    clearTimeout(undoTimers[historyId]);
 
-            if (newShortName !== activeUser) {
-                appState.users[newShortName] = appState.users[activeUser] || 0;
-                delete appState.users[activeUser];
-                
-                avatars[newShortName] = newShortName.charAt(0).toUpperCase();
-                delete avatars[activeUser];
-                
-                activeUser = newShortName;
-                
-                if (!appState.profilePicBase64) {
-                    document.querySelectorAll('.current-user-avatar').forEach(el => {
-                        el.textContent = newShortName.charAt(0).toUpperCase();
-                    });
+    saveUserData();
+    saveSharedState(sharedState);
+    calculateOverallHealth();
+    renderMyTasks();
+    updateLeaderboard();
+    updateTokensUI();
+    if (document.querySelector('.tab-content[data-tab="my-completed"]')?.classList.contains('active'))
+        renderCompletedTab();
+}
+
+/** Vota para reportar una tarea del historial del piso */
+function auditTask(id) {
+    if (!userData.myVotes) userData.myVotes = [];
+    if (userData.myVotes.includes(id)) return;
+
+    const task = sharedState.floorHistory.find(t => t.id === id);
+    if (!task) return;
+
+    const willRevoke = task.votes + 1 >= VOTES_NEEDED;
+    openConfirmModal(
+        '⚖️ Reportar Tarea',
+        `¿Sospechas que esta tarea no fue completada realmente?`,
+        `Tu voto es anónimo. Se necesitan ${VOTES_NEEDED} votos para revocar los puntos. ${willRevoke ? '¡Este será el voto decisivo!' : `Lleva ${task.votes} voto(s).`}`,
+        'Enviar voto', true,
+        () => {
+            task.votes++;
+            userData.myVotes.push(id);
+
+            if (task.votes >= VOTES_NEEDED) {
+                // Revocar puntos al propietario
+                sharedState.scores[task.owner] =
+                    Math.max(0, (sharedState.scores[task.owner] || 0) - task.points);
+
+                // Si el propietario es un usuario registrado, actualizar también sus datos
+                if (USERS_DB[task.owner]) {
+                    const ownerData = loadUserData(task.owner);
+                    if (ownerData) {
+                        ownerData.wallet = Math.max(0, ownerData.wallet - task.points);
+                        ownerData.score  = Math.max(0, ownerData.score  - task.points);
+                        localStorage.setItem(`taskride.user.${task.owner}`, JSON.stringify(ownerData));
+                    }
                 }
-                
+
+                showToast(`⛔ Tarea de ${task.owner} revocada. Se le restan ${task.points} pts.`);
                 updateLeaderboard();
-                calculateOverallHealth();
-            }
-            
-            alert('Perfil actualizado correctamente.');
-            closeModal('profileModal');
-        }
-
-        function uploadProfilePic(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    appState.profilePicBase64 = e.target.result;
-                    applyProfilePicsToAvatars();
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function applyProfilePicsToAvatars() {
-            if (appState.profilePicBase64) {
-                document.querySelectorAll('.current-user-avatar').forEach(el => {
-                    el.innerHTML = '';
-                    el.style.backgroundImage = `url(${appState.profilePicBase64})`;
-                    el.style.backgroundSize = 'cover';
-                    el.style.backgroundPosition = 'center';
-                });
-            }
-        }
-
-        function renderProfileChart() {
-            const chart = document.getElementById('profileChartBars');
-            if(!chart) return;
-            
-            const counts = new Array(10).fill(0);
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            appState.completedTasks.forEach(task => {
-                const taskDate = new Date(task.date);
-                taskDate.setHours(0,0,0,0);
-                const diffTime = today - taskDate;
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                
-                if (diffDays >= 0 && diffDays < 10) {
-                    counts[9 - diffDays]++;
-                }
-            });
-
-            const max = Math.max(...counts, 1);
-            chart.innerHTML = counts.map((val, i) => {
-                const dateLabel = new Date(today);
-                dateLabel.setDate(today.getDate() - (9 - i));
-                const dateStr = `${dateLabel.getDate()}/${dateLabel.getMonth()+1}`;
-                return `<div class="chart-col" title="${val} tareas el ${dateStr}"><div class="chart-bar" style="height:${(val/max)*100}%"></div><span class="chart-val">${val}</span></div>`;
-            }).join('');
-        }
-
-        function initTheme() {
-            const btn = document.getElementById('themeToggle');
-            const isLight = localStorage.getItem('taskride.theme') === 'light';
-            if (isLight) document.documentElement.setAttribute('data-theme', 'light');
-            btn.textContent = isLight ? '☀️' : '🌙';
-            btn.onclick = () => {
-                const nowLight = document.documentElement.getAttribute('data-theme') === 'light';
-                document.documentElement.setAttribute('data-theme', nowLight ? 'dark' : 'light');
-                localStorage.setItem('taskride.theme', nowLight ? 'dark' : 'light');
-                btn.textContent = nowLight ? '🌙' : '☀️';
-            };
-        }
-
-        function openModal(id) { 
-            document.getElementById(id).style.display = 'flex'; 
-            if(id === 'profileModal') renderProfileChart();
-        }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        // ==========================================
-        // LÓGICA: DOBLE CONFIRMACIÓN Y DESHACER
-        // ==========================================
-
-        let pendingConfirmCallback = null;
-        let undoTimers = {};
-
-        function openConfirmModal(title, text, subtext, confirmLabel, isDestructive, callback) {
-            document.getElementById('confirmModalTitle').textContent = title;
-            document.getElementById('confirmModalText').textContent = text;
-            document.getElementById('confirmModalSubtext').textContent = subtext;
-            
-            const btn = document.getElementById('confirmModalBtn');
-            btn.textContent = confirmLabel;
-            
-            if(isDestructive) {
-                btn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
-                btn.style.boxShadow = '0 4px 12px rgba(220, 38, 38, 0.4)';
             } else {
-                btn.style.background = 'var(--primary)';
-                btn.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.5)';
+                showToast(`Voto registrado. Faltan ${VOTES_NEEDED - task.votes} votos para revocar.`);
             }
 
-            pendingConfirmCallback = callback;
-            openModal('confirmActionModal');
+            saveUserData();
+            saveSharedState(sharedState);
+
+            // Actualizar ambas vistas del historial
+            renderHistoryTab();
         }
+    );
+}
 
-        document.getElementById('confirmModalBtn').addEventListener('click', () => {
-            if (pendingConfirmCallback) pendingConfirmCallback();
-            closeModal('confirmActionModal');
-        });
 
-        function showUndoToast(taskId, taskName, historyId) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast-msg';
-            toast.id = `toast-${historyId}`;
-            
-            toast.innerHTML = `
-                <div class="toast-text">
-                    Completaste: <strong>${taskName}</strong><br>
-                    <span style="font-size:0.75rem; color:var(--text-muted);">Puedes restaurarla en los próximos 10 min.</span>
+/* ============================================================
+   7. PERFIL, CONTRASEÑA, FOTO
+============================================================ */
+
+/** Abre el modal de perfil con los datos del usuario actual */
+function openProfileModal() {
+    document.getElementById('editProfileName').value  = userData.displayName;
+    document.getElementById('editProfileEmail').value = userData.email;
+    document.getElementById('editFloorName').value    = userData.floorName || sharedState.floorName;
+    renderProfileChart();
+    openModal('profileModal');
+}
+
+/** Guarda los cambios del perfil */
+function saveProfile() {
+    const newFullName = document.getElementById('editProfileName').value.trim();
+    const newFloor    = document.getElementById('editFloorName').value.trim() || 'Los Estudiantes';
+
+    if (!newFullName) { showToast('❌ El nombre no puede estar vacío.'); return; }
+
+    userData.displayName = newFullName;
+    userData.floorName   = newFloor;
+    sharedState.floorName = newFloor;
+
+    // Actualizar el score en el estado compartido con el nuevo nombre de usuario
+    // (el username de login no cambia, solo el nombre de visualización)
+
+    saveUserData();
+    saveSharedState(sharedState);
+
+    updateNavProfile();
+    updateFloorName();
+    updateLeaderboard();
+    showToast('✅ Perfil actualizado correctamente.');
+    closeModal('profileModal');
+}
+
+/** Cambia la contraseña del usuario activo */
+function changePassword() {
+    const current  = document.getElementById('pwdCurrent').value;
+    const newPwd   = document.getElementById('pwdNew').value;
+    const confirm  = document.getElementById('pwdConfirm').value;
+    const errEl    = document.getElementById('pwdError');
+
+    if (current !== USERS_DB[activeUser].password) {
+        errEl.textContent = 'La contraseña actual no es correcta.';
+        errEl.style.display = 'block'; return;
+    }
+    if (newPwd.length < 6) {
+        errEl.textContent = 'La nueva contraseña debe tener al menos 6 caracteres.';
+        errEl.style.display = 'block'; return;
+    }
+    if (newPwd !== confirm) {
+        errEl.textContent = 'Las contraseñas no coinciden.';
+        errEl.style.display = 'block'; return;
+    }
+
+    // Actualizar contraseña en memoria (en producción iría al backend)
+    USERS_DB[activeUser].password = newPwd;
+    errEl.style.display = 'none';
+
+    // Limpiar campos
+    ['pwdCurrent', 'pwdNew', 'pwdConfirm'].forEach(id =>
+        document.getElementById(id).value = '');
+
+    closeModal('passwordResetModal');
+    showToast('🔐 Contraseña actualizada correctamente.');
+}
+
+/** Sube y guarda la foto de perfil */
+function uploadProfilePic(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const pic = e.target.result;
+        userData.profilePic = pic;
+
+        // Guardar también en el estado compartido para que el otro usuario la vea
+        if (!sharedState.profilePics) sharedState.profilePics = {};
+        sharedState.profilePics[activeUser] = pic;
+
+        saveUserData();
+        saveSharedState(sharedState);
+        updateNavProfile();     // Actualiza navbar, chip y modal de perfil
+        updateLeaderboard();    // Actualiza el avatar en el ranking
+        showToast('📷 Foto de perfil actualizada. ¡Se ve genial!');
+    };
+    reader.readAsDataURL(file);
+}
+
+
+/* ============================================================
+   8. LEADERBOARD Y SALUD DEL PISO
+============================================================ */
+
+/** Actualiza el ranking lateral con los scores del estado compartido */
+function updateLeaderboard() {
+    const sorted = Object.entries(sharedState.scores)
+        .sort((a, b) => b[1] - a[1]);
+
+    const subtitleMap = {
+        'Jesus':   'Trabajador incansable 💪',
+        'Ricardo': 'El más limpio del piso 🏆',
+        'Carlos':  'Necesita un empujón',
+        'Laura':   'En progreso',
+        'David':   'Puede mejorar'
+    };
+
+    // Fotos compartidas: las ven todos los usuarios
+    const pics = sharedState.profilePics || {};
+
+    document.getElementById('compact-leaderboard').innerHTML = sorted.slice(0, 6).map(([name, pts], i) => {
+        const isMe   = name === activeUser;
+        const sub    = isMe
+            ? (i === 0 ? 'Vas liderando 🚀' : '¡A por el líder!')
+            : (subtitleMap[name] || 'En progreso');
+
+        // Últimas tareas del historial para el tooltip
+        const lastTasks = sharedState.floorHistory
+            .filter(t => t.owner === name)
+            .slice(0, 3)
+            .map(t => `• ${t.name}`);
+        const tooltip = lastTasks.length ? lastTasks.join('<br>') : 'Aún no hay tareas';
+
+        const initial = name[0].toUpperCase();
+
+        // Si el usuario tiene foto en el estado compartido, se muestra inline
+        const picStyle = pics[name]
+            ? `style="background-image:url(${pics[name]});background-size:cover;background-position:center;"`
+            : '';
+        const picContent = pics[name] ? '' : initial;
+
+        return `
+        <div class="ranking-item${isMe ? ' current-user' : ''}">
+            <div class="rank-user-info">
+                <div class="rank-avatar${isMe ? ' current-user-avatar' : ''}"
+                    ${picStyle}>${picContent}</div>
+                <div>
+                    <p class="rank-name">${isMe ? `${name} (Tú)` : name}</p>
+                    <p class="rank-subtitle">${sub}</p>
                 </div>
-                <button class="btn-undo" onclick="undoTask('${historyId}')">Deshacer Error</button>
-            `;
-            
-            container.appendChild(toast);
+            </div>
+            <div class="rank-score"><span class="score-num">${pts}</span> pts</div>
+            <div class="ranking-tooltip"><strong>Últimas tareas:</strong><br>${tooltip}</div>
+        </div>`;
+    }).join('');
+}
 
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100%)';
-                setTimeout(() => toast.remove(), 400); 
-            }, 8000); 
+/** Recalcula la barra de salud del piso */
+function calculateOverallHealth() {
+    let score = 100;
+    if (!userData) return;
 
-            // --- ACTUALIZADO: Si caduca, actualizamos la vista de completadas ---
-            undoTimers[historyId] = setTimeout(() => {
-                const ct = appState.completedTasks.find(t => t.id === historyId);
-                if (ct) {
-                    ct.canUndo = false;
-                    // Actualizar la lista en vivo si el usuario está mirando esa pestaña
-                    if(document.querySelector(`.tab-content[data-tab="my-completed"]`).classList.contains('active')) {
-                        renderCompletedTab();
-                    }
-                }
-            }, 10 * 60 * 1000);
-        }
+    userData.myTasks.forEach(t => {
+        score -= t.isPaused ? 8 : (t.urgency === 'urgent' ? 12 : t.urgency === 'medium' ? 6 : 2);
+    });
+    score -= sharedState.pausedByOthers.length * 5;
 
-        function undoTask(historyId) {
-            const index = appState.completedTasks.findIndex(t => t.id === historyId);
-            if (index === -1) return;
-            
-            const ct = appState.completedTasks[index];
-            if (ct.canUndo === false) {
-                alert("Han pasado más de 10 minutos, esta acción ya es permanente.");
-                return;
-            }
+    const pts = Object.values(sharedState.scores);
+    const total = pts.reduce((a, b) => a + b, 0);
+    if (total > 0) {
+        const avg = total / pts.length;
+        const max = Math.max(...pts);
+        if (max > avg * 1.8) score -= 15;
+        else if (max > avg * 1.4) score -= 8;
+    }
 
-            const toastEl = document.getElementById(`toast-${historyId}`);
-            if (toastEl) toastEl.remove();
+    const health = Math.max(0, Math.min(100, Math.round(score)));
+    const bar    = document.getElementById('healthBarElement');
+    const perc   = document.getElementById('healthPercentageElement');
+    if (bar && perc) {
+        bar.style.width  = `${health}%`;
+        perc.textContent = `${health}%`;
+        bar.className    = 'health-bar ' +
+            (health >= 70 ? 'healthy' : health >= 40 ? 'alert' : 'critical');
+    }
+}
 
-            appState.users[activeUser] -= ct.points;
-            if (ct.shared > 0 && ct.originalTask && ct.originalTask.owner) {
-                appState.users[ct.originalTask.owner] -= ct.shared;
-            }
+/** Cuenta atrás hasta fin de mes */
+function updateTimer() {
+    const now  = new Date();
+    const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const diff = next - now;
+    const d    = Math.floor(diff / 864e5);
+    const h    = Math.floor((diff / 36e5) % 24);
+    const m    = Math.floor((diff / 6e4) % 60);
+    const el   = document.getElementById('leaderboardResetCountdown');
+    if (el) el.innerHTML = `⏳ Fin de mes en: <strong>${d}d ${h}h ${m}m</strong>`;
+}
 
-            appState.completedTasks.splice(index, 1);
-            if(ct.originalTask) {
-                appState.myTasks.unshift(ct.originalTask);
-            }
+/** Actualiza los contadores de tokens y monedero */
+function updateTokensUI() {
+    if (!userData) return;
+    document.getElementById('tokenCount').textContent   = userData.tokens;
+    document.getElementById('walletCount').textContent  = userData.wallet;
+    document.getElementById('shopWalletCount').textContent = userData.wallet;
+}
 
-            clearTimeout(undoTimers[historyId]); 
+/** Compra un comodín adicional */
+function buyToken() {
+    if (userData.wallet >= TOKEN_COST) {
+        userData.wallet -= TOKEN_COST;
+        userData.tokens++;
+        saveUserData();
+        updateTokensUI();
+        showToast(`🎟️ Has comprado un comodín por ${TOKEN_COST} puntos.`);
+        closeModal('shopModal');
+    } else {
+        showToast(`❌ No tienes suficientes puntos (necesitas ${TOKEN_COST}). Completa más tareas.`);
+    }
+}
 
-            calculateOverallHealth();
-            renderMyTasks();
-            updateLeaderboard();
-            if(document.querySelector(`.tab-content[data-tab="my-completed"]`).classList.contains('active')) {
-                renderCompletedTab();
-            }
-        }
 
-        function finalizeTask(index, gainedPoints, sharedPoints) {
-            const task = appState.myTasks[index];
-            appState.myTasks.splice(index, 1);
-            appState.users[activeUser] += gainedPoints;
-            
-            if (task.owner && sharedPoints > 0) appState.users[task.owner] += sharedPoints;
+/* ============================================================
+   9. TEMA (OSCURO / CLARO)
+============================================================ */
+function initTheme() {
+    const btn     = document.getElementById('themeToggle');
+    const isLight = localStorage.getItem('taskride.theme') === 'light';
+    if (isLight) document.documentElement.setAttribute('data-theme', 'light');
+    btn.textContent = isLight ? '☀️' : '🌙';
+    btn.onclick = () => {
+        const nowLight = document.documentElement.getAttribute('data-theme') === 'light';
+        document.documentElement.setAttribute('data-theme', nowLight ? 'dark' : 'light');
+        localStorage.setItem('taskride.theme', nowLight ? 'dark' : 'light');
+        btn.textContent = nowLight ? '🌙' : '☀️';
+    };
+}
 
-            const historyId = `c_${Date.now()}`;
-            
-            appState.completedTasks.unshift({ 
-                id: historyId, 
-                name: task.name, 
-                points: gainedPoints, 
-                shared: sharedPoints, 
-                date: new Date().toISOString(),
-                originalTask: task, 
-                canUndo: true       
-            });
-            
-            showUndoToast(task.id, task.name, historyId); 
-            
-            calculateOverallHealth();
-            renderMyTasks(); 
-            updateLeaderboard();
-        }
 
-        function rescueTask(id) {
-            const taskIndex = appState.pausedByOthers.findIndex(t => t.id === id);
-            const task = appState.pausedByOthers[taskIndex];
-            
-            openConfirmModal(
-                '🤝 Rescatar Tarea', 
-                `¿Quieres encargarte de "${task.name}"?`, 
-                `Ganarás puntos extra y se notificará a ${task.owner}. No podrás devolverla una vez aceptada.`, 
-                'Sí, encargarme',
-                false, 
-                () => {
-                    appState.pausedByOthers.splice(taskIndex, 1);
-                    appState.myTasks.unshift({
-                        id: `r_${Date.now()}`, name: task.name, meta: `Recuperada de ${task.owner}`,
-                        points: task.points, icon: '🆘', urgency: 'urgent', difficulty: 'easy', isPaused: false, rescued: true, owner: task.owner, subtasks: []
-                    });
-                    calculateOverallHealth();
-                    switchTab('my-tasks');
-                }
-            );
-        }
+/* ============================================================
+   10. MODALES Y UTILIDADES
+============================================================ */
 
-        function auditTask(id) {
-            const index = appState.floorHistory.findIndex(t => t.id === id);
-            if (index > -1) {
-                const task = appState.floorHistory[index];
-                
-                openConfirmModal(
-                    '🚩 Reportar Trampa', 
-                    `¿Seguro que ${task.owner} NO ha completado "${task.name}"?`, 
-                    `Se le restarán ${task.points} pts. Esto puede generar conflictos en el piso, úsalo con responsabilidad.`, 
-                    'Sí, reportar',
-                    true, 
-                    () => {
-                        appState.users[task.owner] = Math.max(0, appState.users[task.owner] - task.points);
-                        appState.floorHistory.splice(index, 1);
-                        
-                        calculateOverallHealth();
-                        updateLeaderboard();
-                        renderHistoryTab();
-                        if(document.getElementById('fullHistoryModal').style.display === 'flex') {
-                            renderHistoryTab(); 
-                        }
-                    }
-                );
-            }
-        }
-    </script>
+function openModal(id) {
+    // Rellenar datos del perfil antes de mostrar el modal
+    if (id === 'profileModal') {
+        document.getElementById('editProfileName').value  = userData?.displayName || '';
+        document.getElementById('editProfileEmail').value = userData?.email || '';
+        document.getElementById('editFloorName').value    = userData?.floorName || sharedState?.floorName || '';
+        renderProfileChart();
+    }
+    document.getElementById(id).style.display = 'flex';
+}
+
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+/** Modal genérico de confirmación con callback */
+function openConfirmModal(title, text, subtext, confirmLabel, isDestructive, callback) {
+    document.getElementById('confirmModalTitle').textContent   = title;
+    document.getElementById('confirmModalText').textContent    = text;
+    document.getElementById('confirmModalSubtext').textContent = subtext;
+    const btn = document.getElementById('confirmModalBtn');
+    btn.textContent         = confirmLabel;
+    btn.style.background    = isDestructive
+        ? 'linear-gradient(135deg,#ef4444,#dc2626)'
+        : 'var(--primary)';
+    btn.style.boxShadow     = isDestructive
+        ? '0 4px 12px rgba(220,38,38,.4)'
+        : '0 4px 12px rgba(99,102,241,.5)';
+    pendingConfirmCallback  = callback;
+    openModal('confirmActionModal');
+}
+
+document.getElementById('confirmModalBtn').addEventListener('click', () => {
+    if (pendingConfirmCallback) pendingConfirmCallback();
+    closeModal('confirmActionModal');
+});
+
+/** Elimina todos los toasts activos (se usa al cerrar sesión) */
+function clearAllToasts() {
+    document.getElementById('toastContainer').innerHTML = '';
+}
+
+/** Crea el botón × para cerrar un toast manualmente */
+function makeCloseBtn(toast) {
+    const btn = document.createElement('button');
+    btn.className   = 'btn-toast-close';
+    btn.textContent = '×';
+    btn.onclick = () => {
+        toast.style.opacity   = '0';
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => toast.remove(), 400);
+    };
+    return btn;
+}
+
+/** Toast temporal de confirmación con opción de deshacer */
+function showUndoToast(historyId, taskName, pts) {
+    const container = document.getElementById('toastContainer');
+    const toast     = document.createElement('div');
+    toast.className = 'toast-msg';
+    toast.id        = `toast-${historyId}`;
+    toast.innerHTML = `
+        <div class="toast-text">
+            ✅ Completaste: <strong>${taskName}</strong> (+${pts} pts)<br>
+            <span style="font-size:.75rem;color:var(--text-muted);">Puedes restaurarla en los próximos 10 min.</span>
+        </div>
+        <button class="btn-undo" onclick="undoTask('${historyId}')">Deshacer</button>`;
+    toast.appendChild(makeCloseBtn(toast));
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity   = '0';
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => toast.remove(), 400);
+    }, 15000);
+}
+
+/** Toast simple de información */
+function showToast(msg) {
+    const container = document.getElementById('toastContainer');
+    const toast     = document.createElement('div');
+    toast.className = 'toast-msg';
+    toast.innerHTML = `<div class="toast-text">${msg}</div>`;
+    toast.appendChild(makeCloseBtn(toast));
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity   = '0';
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => toast.remove(), 400);
+    }, 5000);
+}
+
+/** Cerrar modal al hacer clic en el fondo oscuro */
+document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', e => {
+        if (e.target === modal) closeModal(modal.id);
+    });
+});
+
+
+/* ============================================================
+   ARRANQUE
+   Al cargar la página: 1) comprueba versión de demo,
+   2) intenta restaurar sesión, 3) guarda al cerrar pestaña.
+============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+    checkDemoVersion();
+    tryRestoreSession();
+});
+
+// Guardar datos al cerrar o recargar la página
+window.addEventListener('beforeunload', () => {
+    if (activeUser && userData && sharedState) {
+        saveUserData();
+        saveSharedState(sharedState);
+    }
+});
+</script>
 </body>
 </html>
